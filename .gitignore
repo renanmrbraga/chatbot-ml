@@ -1,0 +1,109 @@
+# Arquivos compilados e cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de extensão C (Linux/Unix)
+*.so
+
+# Diretórios de distribuição e empacotamento
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Arquivos gerados pelo PyInstaller
+*.manifest
+*.spec
+
+# Logs de instalação do pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Relatórios de testes e cobertura
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Arquivos de tradução
+*.mo
+*.pot
+
+# Arquivos comuns em projetos Django/Flask/Scrapy (remova se não aplicável)
+*.log
+local_settings.py
+db.sqlite3
+instance/
+.webassets-cache
+.scrapy
+
+# Documentação gerada
+docs/_build/
+
+# Arquivos temporários de PyBuilder
+target/
+
+# Checkpoints de notebooks Jupyter
+.ipynb_checkpoints
+
+# Arquivos e configurações do IPython
+profile_default/
+ipython_config.py
+
+# Ambiente virtual: IGNORA A PASTA DO AMBIENTE VIRTUAL
+# Neste caso, a pasta "chatbot-ml" é utilizada como o ambiente virtual e será ignorada.
+chatbot-ml/
+
+# Outros ambientes virtuais comuns (se existirem)
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.virtualenv/
+
+# Arquivos de configurações do VS Code
+.vscode/
+*.code-workspace
+
+# Configurações de outras IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos gerados pelo sistema operacional
+.DS_Store
+Thumbs.db
+
+# Cache de ferramentas de análise
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Verificadores de tipos (ex.: Pyre, Pyright)
+.pyre/
+.typings/
+
+# Histórico do editor
+.history/

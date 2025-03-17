@@ -1,0 +1,17 @@
+# Ignorar o ambiente virtual chatbot-ml
+chatbot-ml/
+
+# Ignorar arquivos sensíveis
+.env
+src/.env
+
+__pycache__/
+*.log
+db_backups/
+secrets/
+
+# Ignorar diretórios temporários do VS Code
+.vscode/
+
+# Ignorar pastas sensíveis
+data/

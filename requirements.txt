@@ -1,0 +1,8 @@
+langchain>=0.0.28
+langchain-anthropic>=0.0.1
+langchain_community
+anthropic
+python-dotenv
+requests
+PyYAML
+ipykernel
