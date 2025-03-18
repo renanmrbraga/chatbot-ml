@@ -103,7 +103,7 @@ O script fará o seguinte:
 ├── tests/
 ├── .gitignore
 ├── Dockerfile
-├── LICENSE.txt
+├── LICENSE
 ├── README.md   # Este arquivo de documentação
 └── requirements.txt
 ```
