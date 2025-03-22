@@ -1,6 +1,6 @@
 # ChatBot LLM
 
-Este projeto é um **Chat Bot baseado em Machine Learning**. Ele utiliza modelos de linguagem da Anthropic integrados com a biblioteca **LangChain** para realizar tarefas como sumarização de textos e outras operações de NLP (Processamento de Linguagem Natural).
+Este projeto é um **Chat Bot baseado em Large Language Model**. Ele utiliza modelos de linguagem da Anthropic integrados com a biblioteca **LangChain** para realizar tarefas como sumarização de textos e outras operações de NLP (Processamento de Linguagem Natural).
 
 ## Sumário
 
@@ -16,7 +16,7 @@ Este projeto é um **Chat Bot baseado em Machine Learning**. Ele utiliza modelos
 
 ## Visão Geral
 
-O ChatBot ML tem como objetivo oferecer uma interface inteligente para processar e resumir textos, além de outras funcionalidades que podem ser integradas futuramente. Este projeto foi desenvolvido para atender as necessidades da empresa, utilizando a API da Anthropic e uma abordagem modular com LangChain.
+O ChatBot LLM tem como objetivo oferecer uma interface inteligente para processar e resumir textos, além de outras funcionalidades que podem ser integradas futuramente. Este projeto foi desenvolvido para atender as necessidades da empresa, utilizando a API da Anthropic e uma abordagem modular com LangChain.
 
 ## Funcionalidades
 
