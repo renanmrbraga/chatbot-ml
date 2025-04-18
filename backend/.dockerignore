@@ -1,0 +1,19 @@
+# Ignora arquivos temporários e ambientes locais
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# Ignora ambientes e configurações locais
+.venv/
+.vscode/
+.DS_Store
+venv/
+
+# Ignora pastas de dados e uploads
+uploads_temp/
+logs/
+scraping/

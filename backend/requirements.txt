@@ -1,0 +1,31 @@
+# Backend core
+fastapi
+uvicorn
+
+# Banco de dados
+sqlalchemy
+psycopg
+pymongo
+
+# Manipulação e visualização
+pandas
+matplotlib
+fpdf
+
+# LLM + embeddings
+langchain
+langchain-groq
+langchain-cohere
+langchain-pinecone
+sentence-transformers
+transformers
+cohere
+pinecone
+
+# Auxiliares
+beautifulsoup4
+requests
+python-dotenv
+rapidfuzz
+python-multipart
+tabulate
