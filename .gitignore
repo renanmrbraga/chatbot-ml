@@ -39,6 +39,7 @@ venv.bak/
 Thumbs.db
 
 # Dados sensíveis
+backend/cache/
 backend/data/
 backend/scraping/data/
 backend/logs/

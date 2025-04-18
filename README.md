@@ -72,9 +72,6 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 │   ├── .env                # Configurações do frontend
 │   └── .env.example        # Modelo de variáveis para frontend
 │
-📁 scripts/
-│   └── gerar_embeddings_cidades.py  # (Opcional) Geração manual de embeddings
-│
 ├── .gitignore
 ├── LICENSE
 ├── NOTICE.md
