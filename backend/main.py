@@ -7,15 +7,14 @@ from pydantic import BaseModel
 from core.handlers.chat_handler import processar_pergunta
 from core.handlers.session_handler import get_history_for_session
 from utils.logger import get_logger
+from utils.formatters import nome_agente_formatado
+from utils.parser import extrair_nome_uf
 
-# ✅ Importa inicializador de embeddings (pré-carregamento silencioso)
 from startup.embed_initializer import inicializar_embeddings
 
 logger = get_logger(__name__)
-
 app = FastAPI(title="Chatbot PPPs API", version="1.0")
 
-# 🔄 Inicialização de embeddings (roda uma única vez se necessário)
 inicializar_embeddings()
 
 # -------------------- CORS -------------------- #
@@ -26,23 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# -------------------- Agente -> Nome amigável -------------------- #
-NOMES_AMIGAVEIS = {
-    "EducacaoAgent": "Educação",
-    "ComparativeAgent": "Dashboard Comparativo",
-    "PopulacaoAgent": "População",
-    "EconomiaAgent": "Economia",
-    "InstitucionalAgent": "Institucional",
-    "LLM": "LLM (Fallback)",
-}
-
-def nome_agente_formatado(agente) -> str:
-    if isinstance(agente, str):
-        return NOMES_AMIGAVEIS.get(agente, "LLM (Fallback)")
-    if agente is None:
-        return NOMES_AMIGAVEIS.get("None", "LLM (Fallback)")
-    return NOMES_AMIGAVEIS.get(agente.__class__.__name__, agente.__class__.__name__)
 
 # -------------------- Schemas -------------------- #
 class ChatRequest(BaseModel):
@@ -62,6 +44,8 @@ def chat_endpoint(req: ChatRequest):
         req.pergunta, req.session_id
     )
 
+    cidade, uf = extrair_nome_uf(cidade_info)
+
     # 🔒 Serialização segura dos dados
     dados_serializaveis = {}
     if isinstance(dados, dict):
@@ -76,8 +60,8 @@ def chat_endpoint(req: ChatRequest):
         "resposta": resposta,
         "agente": nome_agente_formatado(agente),
         "fontes": fontes,
-        "cidade": cidade_info.get("nome") if cidade_info else None,
-        "uf": cidade_info.get("uf") if cidade_info else None,
+        "cidade": cidade,
+        "uf": uf,
         "tema": tema,
         "dados_brutos": dados_serializaveis,
         "dashboard_base64": dashboard_base64,

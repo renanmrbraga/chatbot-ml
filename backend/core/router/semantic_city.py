@@ -1,17 +1,18 @@
 # backend/core/router/semantic_city.py
 import os
-import unicodedata
+import re
+import numpy as np
+import cohere
+
+from sqlalchemy import text
 from functools import lru_cache
 from rapidfuzz import process, fuzz
-
 from sentence_transformers import SentenceTransformer
-import numpy as np
 
-from database.connection import get_connection
-from core.router.uf_matcher import detectar_uf
+from database.connection import get_engine
+from utils.geo import detectar_uf
 from utils.logger import get_logger
-
-import cohere
+from utils.parser import normalizar, extrair_cidades_explicitamente  # <- Importadas daqui
 
 logger = get_logger(__name__)
 
@@ -34,17 +35,14 @@ if PERFORMANCE_LEVEL in ("auto", "turbo"):
 
 co = cohere.Client(COHERE_API_KEY) if COHERE_API_KEY else None
 
-# === FUNÇÕES DE SUPORTE ===
-def normalizar(texto: str) -> str:
-    return unicodedata.normalize("NFKD", texto.lower()).encode("ascii", "ignore").decode("ascii").strip()
-
 @lru_cache(maxsize=1)
 def carregar_cidades():
-    logger.info("📦 Carregando cidades do banco de dados...")
-    with get_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT codigo_ibge, cidade, estado FROM dados_municipios")
-            linhas = cursor.fetchall()
+    logger.info("📦 Carregando cidades do banco de dados via SQLAlchemy...")
+    engine = get_engine()
+
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT codigo_ibge, cidade, estado FROM dados_municipios"))
+        linhas = result.fetchall()
 
     cidades = {}
     for codigo_ibge, cidade, uf in linhas:
@@ -73,29 +71,16 @@ def carregar_embeddings_cidades():
     nomes = list(cidades_index.keys())
     emb = modelo_local.encode(nomes, normalize_embeddings=True)
 
-    # Salva para futuras execuções
     os.makedirs("data", exist_ok=True)
     np.savez_compressed(EMBEDDINGS_PATH, nomes=nomes, embeddings=emb)
     logger.info("💾 Embeddings salvos em cache local.")
     return nomes, emb
 
-def extrair_cidades_explicitamente(texto: str, cidades_index: dict, max_cidades: int = 2) -> list[dict]:
-    texto_lower = texto.lower()
-    encontradas = []
-    for nome, dados in cidades_index.items():
-        if nome in texto_lower and dados not in encontradas:
-            encontradas.append(dados)
-        if len(encontradas) >= max_cidades:
-            break
-    return encontradas
-
-# === FUNÇÃO PRINCIPAL ===
 def detectar_cidades(texto: str, max_cidades: int = 10) -> list[dict]:
     cidades_index = carregar_cidades()
     texto_norm = normalizar(texto)
 
-    # 🔍 Verificação direta
-    cidades_exp = extrair_cidades_explicitamente(texto_norm, cidades_index)
+    cidades_exp = extrair_cidades_explicitamente(texto_norm, cidades_index, max_cidades=max_cidades)
     if len(cidades_exp) >= 2:
         logger.debug(f"🔎 Cidades extraídas diretamente da pergunta: {[c['nome'] for c in cidades_exp]}")
         return cidades_exp[:max_cidades]
@@ -112,12 +97,10 @@ def detectar_cidades(texto: str, max_cidades: int = 10) -> list[dict]:
 
     nomes_norm = list(cidades_index.keys())
 
-    # 1️⃣ Fuzzy Matching
     matches_fuzzy = process.extract(texto_norm, nomes_norm, scorer=fuzz.token_sort_ratio, limit=max_cidades * 2)
     fuzzy_cidades = {nome for nome, score, _ in matches_fuzzy if score >= 85}
     cidades_encontradas = set(fuzzy_cidades)
 
-    # 2️⃣ Embedding Local
     if modelo_local:
         logger.debug("🧠 Usando embeddings locais...")
         try:
@@ -138,7 +121,6 @@ def detectar_cidades(texto: str, max_cidades: int = 10) -> list[dict]:
         except Exception as e:
             logger.warning(f"⚠️ Erro ao usar embeddings locais: {e}")
 
-    # 3️⃣ Fallback: Cohere
     if not cidades_encontradas and co:
         logger.debug("🌐 Fallback com Cohere...")
         try:
@@ -156,14 +138,23 @@ def detectar_cidades(texto: str, max_cidades: int = 10) -> list[dict]:
         logger.warning("⚠️ Nenhuma cidade foi detectada.")
         return []
 
-    # ✅ Filtragem final por código IBGE
     cidades_final = []
     codigos_ibge = set()
+
+    agrupadas = {}
     for nome in cidades_encontradas:
         cid = cidades_index.get(nome)
-        if cid and cid["codigo_ibge"] not in codigos_ibge:
-            codigos_ibge.add(cid["codigo_ibge"])
-            cidades_final.append(cid)
+        if not cid:
+            continue
+        chave = normalizar(cid["nome"])
+        pop = cid.get("populacao", 0)
+        if chave not in agrupadas or pop > agrupadas[chave].get("populacao", 0):
+            agrupadas[chave] = cid
+
+    for cidade in agrupadas.values():
+        if cidade["codigo_ibge"] not in codigos_ibge:
+            codigos_ibge.add(cidade["codigo_ibge"])
+            cidades_final.append(cidade)
         if len(cidades_final) >= max_cidades:
             break
 

@@ -6,13 +6,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Instala dependências pro script
+RUN apk add --no-cache bash curl jq
+
 COPY . .
 
-# Builda o frontend (React + Vite)
-RUN npm run build
-
-# Usa um servidor leve para servir os arquivos (alternativa: nginx)
-RUN npm install -g serve
+# Permissão para o entrypoint
+RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
-CMD ["serve", "-s", "dist"]
+CMD ["./entrypoint.sh"]

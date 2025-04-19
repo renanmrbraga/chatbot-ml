@@ -1,10 +1,13 @@
 # backend/core/agents/economia_agent.py
-from database.connection import get_connection
+import pandas as pd
+
+from database.connection import get_engine
 from core.router.semantic_city import detectar_cidades
 from core.llm.engine import gerar_resposta
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
 
 class EconomiaAgent:
     def __init__(self):
@@ -29,17 +32,14 @@ class EconomiaAgent:
         logger.debug(f"📍 Cidade identificada: {nome} ({uf})")
 
         try:
-            with get_connection() as conn:
-                with conn.cursor() as cur:
-                    cur.execute("""
-                        SELECT cidade, estado, pib_per_capita, ano_pib
-                        FROM dados_municipios
-                        WHERE cidade = %s
-                    """, (nome,))
-                    row = cur.fetchone()
-                    colnames = [desc[0] for desc in cur.description]
+            query = """
+                SELECT cidade, estado, pib_per_capita, ano_pib
+                FROM dados_municipios
+                WHERE cidade = %(cidade)s
+            """
+            df = pd.read_sql(query, con=get_engine(), params={"cidade": nome})  # ✅ CORRIGIDO
 
-            if not row:
+            if df.empty:
                 logger.warning(f"⚠️ Nenhum dado econômico encontrado para {nome}.")
                 return {
                     "tipo": "erro",
@@ -48,12 +48,12 @@ class EconomiaAgent:
                     "fontes": []
                 }
 
-            dados_dict = dict(zip(colnames, row))
+            dados_dict = df.to_dict(orient="records")
             logger.info(f"✅ Dados econômicos recuperados com sucesso para {nome}.")
 
             resposta = gerar_resposta(
                 pergunta=pergunta,
-                dados=[dados_dict],
+                dados=dados_dict,
                 tema=self.tema,
                 fontes=["PostgreSQL"]
             )
@@ -61,7 +61,7 @@ class EconomiaAgent:
             return {
                 "tipo": "resposta",
                 "mensagem": resposta,
-                "dados": [dados_dict],
+                "dados": dados_dict,
                 "fontes": ["PostgreSQL"]
             }
 

@@ -1,60 +1,27 @@
 # backend/core/router/semantic_router.py
 import json
 import re
-from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-from utils.config import GROQ_API_KEY
 from utils.logger import get_logger
+from utils.llm_instance import llm  # ✅ instância centralizada
+from utils.llm_utils import TEMPLATE_TEMA
+from utils.temas import TEMAS_VALIDOS
 
 logger = get_logger(__name__)
 
-# Instância da LLM
-llm = ChatGroq(
-    model="gemma2-9b-it",
-    groq_api_key=GROQ_API_KEY,
-    temperature=0.3,
-    max_tokens=512
-)
-
-# Temas disponíveis
-TEMAS_VALIDOS = ["educacao", "populacao", "economia", "dashboard"]
-
-# Prompt de classificação
-TEMPLATE = """
-Você é um classificador semântico para um chatbot sobre políticas públicas de cidades brasileiras.
-
-Classifique a pergunta abaixo em **apenas um** dos seguintes temas:
-
-- educacao
-- populacao
-- economia
-- dashboard (se for uma pergunta que compara duas ou mais cidades)
-
-⚠️ Se a pergunta for muito vaga ou não pertencer a nenhum desses temas, **responda com "tema": "llm"**.
-
-Retorne **apenas o JSON**, sem explicações, neste formato:
-
-{"tema": "educacao"}
-
-Pergunta: "{pergunta}"
-"""
-
-# Função para limpar a resposta
 def limpar_marcacoes(texto: str) -> str:
     return texto.replace("```json", "").replace("```", "").strip()
 
-# Heurística leve para detectar perguntas comparativas
 def heuristica_comparativa(pergunta: str) -> bool:
     comparacoes = [
         r"\bcompare\b", r"\bcomparar\b", r"\bversus\b", r"\bvs\b", r"\bcontra\b",
         r" [xX] ", r"\bmelhor cidade\b", r"\bmais desenvolvida\b",
         r"\bmenor desigualdade\b", r"\bmaior investimento\b", r"\bdiferenças entre\b",
-        r"\b(em|de|entre)\s+\w+\s+e\s+\w+"  # exemplo: "entre Recife e Salvador"
+        r"\b(em|de|entre)\s+\w+\s+e\s+\w+"
     ]
     return any(re.search(p, pergunta.lower()) for p in comparacoes)
 
-# Classificação principal
 def classificar_tema(pergunta: str) -> str:
     if not pergunta or not pergunta.strip():
         logger.warning("⚠️ Pergunta vazia ou inválida.")
@@ -65,12 +32,11 @@ def classificar_tema(pergunta: str) -> str:
         return "dashboard"
 
     try:
-        prompt = ChatPromptTemplate.from_template(TEMPLATE).format_messages(pergunta=pergunta)
+        prompt = ChatPromptTemplate.from_template(TEMPLATE_TEMA).format_messages(pergunta=pergunta)
         resposta = llm.invoke(prompt)
         content = limpar_marcacoes(resposta.content.strip())
         logger.debug(f"🧠 Saída bruta da LLM:\n{content}")
 
-        # Parsing seguro com fallback
         try:
             parsed = json.loads(content)
         except json.JSONDecodeError:

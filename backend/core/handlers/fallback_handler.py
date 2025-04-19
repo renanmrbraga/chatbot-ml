@@ -3,6 +3,7 @@ from core.router.semantic_city import detectar_cidades
 from core.llm.engine import gerar_resposta
 from core.agents.educacao_agent import EducacaoAgent
 from utils.retriever import buscar_contexto
+from utils.formatters import formatar_contexto_para_llm  # ✅ NOVO
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -28,7 +29,9 @@ def executar_fallback(pergunta: str):
 
             if dados and not (isinstance(dados, dict) and dados.get("tipo") == "erro"):
                 fontes = dados.get("fontes", ["PostgreSQL"])
-                resposta = dados.get("mensagem") or gerar_resposta(pergunta, dados.get("dados", {}), tema="educacao", fontes=fontes)
+                resposta = dados.get("mensagem") or gerar_resposta(
+                    pergunta, dados.get("dados", {}), tema="educacao", fontes=fontes
+                )
                 return resposta, fontes, cidade_info, agente
             else:
                 logger.warning("⚠️ Fallback estruturado via Educação falhou.")
@@ -38,8 +41,7 @@ def executar_fallback(pergunta: str):
         documentos, metadatas = buscar_contexto(pergunta)
 
         if documentos:
-            contexto = "\n---\n".join(documentos)
-            fontes = list(set(meta.get("arquivo", "Desconhecido") for meta in metadatas))
+            contexto, fontes = formatar_contexto_para_llm(documentos, metadatas)  # ✅ USO DO FORMATTER
             resposta = gerar_resposta(pergunta, {"context": contexto}, tema="institucional", fontes=fontes)
             return resposta, fontes, None, None
 

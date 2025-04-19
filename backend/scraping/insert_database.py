@@ -1,9 +1,8 @@
 # backend/database/insert_database.py
 import pandas as pd
-
 from pathlib import Path
-
-from database.connection import get_connection
+from sqlalchemy import text
+from database.connection import get_engine
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -39,24 +38,22 @@ def run():
     df = df[expected_columns]
 
     col_str = ", ".join(expected_columns)
-    placeholders = ", ".join(["%s"] * len(expected_columns))
+    placeholders = ", ".join([f":{col}" for col in expected_columns])
     update_str = ", ".join([f"{col} = EXCLUDED.{col}" for col in expected_columns if col != "codigo_ibge"])
 
-    query = f"""
+    query = text(f"""
         INSERT INTO public.dados_municipios ({col_str})
         VALUES ({placeholders})
         ON CONFLICT (codigo_ibge) DO UPDATE SET
         {update_str}
-    """
+    """)
 
     try:
-        logger.info("🔌 Conectando ao PostgreSQL...")
-        with get_connection() as conn:
-            with conn.cursor() as cursor:
-                logger.info("📥 Iniciando inserção dos dados no banco...")
-                for row in df.itertuples(index=False, name=None):
-                    cursor.execute(query, row)
-            conn.commit()
+        engine = get_engine()
+        logger.info("🔌 Conectando ao PostgreSQL via SQLAlchemy...")
+        with engine.begin() as conn:
+            logger.info("📥 Iniciando inserção dos dados no banco...")
+            conn.execute(query, df.to_dict(orient="records"))
         logger.success("✅ Dados atualizados com sucesso no banco PostgreSQL!")
 
     except Exception as e:

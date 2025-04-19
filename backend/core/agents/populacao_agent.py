@@ -1,10 +1,14 @@
 # backend/core/agents/populacao_agent.py
-from database.connection import get_connection
+from sqlalchemy import text
+import pandas as pd
+
+from database.connection import get_engine
 from core.router.semantic_city import detectar_cidades
 from core.llm.engine import gerar_resposta
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
 
 class PopulacaoAgent:
     def __init__(self):
@@ -29,17 +33,14 @@ class PopulacaoAgent:
         logger.debug(f"📍 Cidade reconhecida: {nome} ({uf})")
 
         try:
-            with get_connection() as conn:
-                with conn.cursor() as cur:
-                    cur.execute("""
-                        SELECT cidade, estado, populacao, ano_populacao
-                        FROM dados_municipios
-                        WHERE cidade = %s
-                    """, (nome,))
-                    row = cur.fetchone()
-                    colnames = [desc[0] for desc in cur.description]
+            query = text("""
+                SELECT cidade, estado, populacao, ano_populacao
+                FROM dados_municipios
+                WHERE cidade = :nome
+            """)
+            df = pd.read_sql(query, get_engine(), params={"nome": nome})  # ✅ CORRIGIDO
 
-            if not row:
+            if df.empty:
                 logger.warning(f"⚠️ Nenhum dado populacional encontrado para {nome}.")
                 return {
                     "tipo": "erro",
@@ -48,7 +49,7 @@ class PopulacaoAgent:
                     "fontes": []
                 }
 
-            dados_dict = dict(zip(colnames, row))
+            dados_dict = df.to_dict(orient="records")[0]
             logger.info(f"✅ Dados populacionais encontrados para {nome}.")
 
             resposta = gerar_resposta(

@@ -1,7 +1,6 @@
-# backend/core/router/uf_matcher.py
+# backend/utils/geo.py
 import re
-import unicodedata
-from functools import lru_cache
+from utils.parser import normalizar
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -36,10 +35,6 @@ ESTADOS = {
     "SE": ["sergipe", "se"],
     "TO": ["tocantins", "to"],
 }
-
-@lru_cache(maxsize=64)
-def normalizar(texto: str) -> str:
-    return unicodedata.normalize("NFKD", texto.lower()).encode("ascii", "ignore").decode("ascii")
 
 def detectar_uf(texto: str) -> str | None:
     """

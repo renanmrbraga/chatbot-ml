@@ -4,7 +4,7 @@ uvicorn
 
 # Banco de dados
 sqlalchemy
-psycopg
+psycopg[binary]
 pymongo
 
 # Manipulação e visualização

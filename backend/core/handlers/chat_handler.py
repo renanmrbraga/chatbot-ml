@@ -4,6 +4,7 @@ from core.handlers.log_handler import registrar_log
 from core.handlers.session_handler import registrar_resposta
 from core.router.interpreter import interpretar_pergunta
 from utils.logger import get_logger
+from utils.parser import extrair_nome_uf  # ✅ nova importação
 
 logger = get_logger(__name__)
 
@@ -43,12 +44,10 @@ def processar_pergunta(pergunta: str, session_id: str):
             csv_base64 = dados.get("csv_base64")
             pdf_base64 = dados.get("pdf_base64")
 
-            # Define cidade_info se ainda não tiver sido setado
-            cidade_info = cidade_info or (
+            cidade_info = dados.get("cidade_info") or cidade_info or (
                 dados["dados"][0] if isinstance(dados.get("dados"), list) and dados["dados"] else None
             )
 
-    # === Fallback híbrido ===
     else:
         resposta, fontes, cidade_info, agente = executar_fallback(pergunta)
         agente_nome = agente.__class__.__name__ if agente else "LLM"

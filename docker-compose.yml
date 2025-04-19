@@ -21,8 +21,21 @@ services:
     container_name: chatbot_frontend
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    networks:
+      - chatbot-net
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: chatbot_ngrok
+    command: http frontend:3000
     env_file:
-      - ./frontend/.env
+      - ./ngrok/.env
+    depends_on:
+      - frontend
     networks:
       - chatbot-net
 

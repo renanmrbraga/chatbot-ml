@@ -125,6 +125,7 @@ Copie os exemplos:
 ```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+cp ngrok/.env.example ngrok/.env
 ```
 
 ### 4. .env.example
@@ -146,6 +147,10 @@ EMBEDDING_MODEL=embed-english-v3.0
 ```dotenv
 VITE_API_URL=http://localhost:8000
 ```
+
+#### NGROK
+```dotenv
+NGROK_AUTHTOKEN=sua-chave-ngrok
 
 ### 5. Suba o sistema com Docker Compose
 

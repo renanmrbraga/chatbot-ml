@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import io
 import base64
 
-from database.connection import get_connection
+from database.connection import get_engine
 from core.llm.engine import gerar_resposta, gerar_chave_cache, carregar_do_cache, salvar_em_cache
 from core.router.semantic_city import detectar_cidades
 from core.router.semantic_metric import classificar_metrica
@@ -12,6 +12,7 @@ from utils.logger import get_logger
 from utils.export_utils import exportar_csv_base64, exportar_pdf_base64
 
 logger = get_logger(__name__)
+
 
 class ComparativeAgent:
     def __init__(self):
@@ -40,10 +41,9 @@ class ComparativeAgent:
         metrica, label = classificar_metrica(pergunta)
         logger.info(f"📈 Métrica classificada: {label} ({metrica or 'comparação geral'})")
 
-        # Monta a query dinamicamente
         if metrica:
             query = f"""
-                SELECT cidade, estado, {metrica} AS valor
+                SELECT cidade, estado, {metrica} AS valor, populacao
                 FROM dados_municipios
                 WHERE cidade = ANY(%s)
             """
@@ -60,8 +60,7 @@ class ComparativeAgent:
             """
 
         try:
-            with get_connection() as conn:
-                df = pd.read_sql(query, conn, params=(nomes,))
+            df = pd.read_sql(query, con=get_engine(), params=(nomes,))
         except Exception as e:
             logger.error(f"❌ Erro ao executar query: {e}")
             return {
@@ -86,7 +85,7 @@ class ComparativeAgent:
 
         if resposta_cache:
             resposta = resposta_cache
-            logger.debug("⚡ Resposta carregada do cache.")
+            logger.debug("⚡️ Resposta carregada do cache.")
         else:
             resposta = gerar_resposta(
                 pergunta=pergunta,
@@ -102,6 +101,10 @@ class ComparativeAgent:
         elif "populacao" in df.columns:
             imagem_base64 = self._gerar_grafico(df, coluna="populacao", label="População")
 
+        # 🧠 Cidade com maior população será usada como referência para UF no log
+        cidade_base = df.loc[df["populacao"].idxmax()]
+        cidade_info = [{"nome": cidade_base["cidade"], "uf": cidade_base["estado"]}]
+
         return {
             "tipo": "comparativo",
             "mensagem": resposta,
@@ -109,7 +112,8 @@ class ComparativeAgent:
             "fontes": ["PostgreSQL"],
             "imagem_base64": imagem_base64,
             "csv_base64": exportar_csv_base64(df),
-            "pdf_base64": exportar_pdf_base64(df, titulo=f"Comparação: {label}")
+            "pdf_base64": exportar_pdf_base64(df, titulo=f"Comparação: {label}"),
+            "cidade_info": cidade_info  # <- ⚠️ CRUCIAL para log correto
         }
 
     def _gerar_grafico(self, df: pd.DataFrame, coluna: str, label: str) -> str:
