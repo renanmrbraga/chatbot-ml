@@ -118,15 +118,15 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 
 ## 🧰 Tecnologias
 
-| Camada             | Tecnologias                                                                   |
-|--------------------|-------------------------------------------------------------------------------|
-| **Backend**        | Python + FastAPI + LangChain + Groq (`gemma-2-9b-it`)                         |
-| **Frontend**       | TypeScript + React + Tailwind CSS + Vite                                      |
-| **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers                                     |
-| **RAG**            | Cohere Embeddings + Pinecone + fallback local HuggingFace                     |
-| **Orquestração**   | Agents semânticos + roteamento inteligente                                    |
-| **Dashboards**     | Exportação como imagem base64                                                 |
-| **Infraestrutura** | Docker + logging estruturado + inicialização automática                       |
+| Camada             | Tecnologias                                               |
+| ------------------ | --------------------------------------------------------- |
+| **Backend**        | Python + FastAPI + LangChain + Groq (`gemma-2-9b-it`)     |
+| **Frontend**       | TypeScript + React + Tailwind CSS + Vite                  |
+| **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers                 |
+| **RAG**            | Cohere Embeddings + Pinecone + fallback local HuggingFace |
+| **Orquestração**   | Agents semânticos + roteamento inteligente                |
+| **Dashboards**     | Exportação como imagem base64                             |
+| **Infraestrutura** | Docker + logging estruturado + inicialização automática   |
 
 ---
 
@@ -159,12 +159,12 @@ Copie os exemplos:
 ```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
-cp frontend/ngrok/.env.example ngrok/.env
 ```
 
 ### 4. Configure as variáveis de ambiente (exemplo)
 
 #### Backend
+
 ```dotenv
 # === DATABASE ===
 DATABASE_URL=postgresql+psycopg://postgres:devmode123@chatbot_postgres:5432/chatbot
@@ -190,16 +190,12 @@ PERFORMANCE_LEVEL=auto  # auto | turbo | minimal
 ```
 
 #### Frontend
-```dotenv
-VITE_API_URL=http://localhost:8000
-```
 
-#### Ngrok
 ```dotenv
 NGROK_AUTHTOKEN=sua-chave-ngrok
 ```
 
-### 5. Suba o sistema com Docker Compose
+### 4. Suba o sistema com Docker Compose
 
 ```bash
 docker-compose up --build
