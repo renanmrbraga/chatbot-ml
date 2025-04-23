@@ -1,8 +1,8 @@
 # Ignora dependências e builds
-node_modules/
-dist/
-.cache/
-.vite/
+node_modules
+dist
+.cache
+.vite
 
 # Ignora configurações locais e IDEs
 .vscode/

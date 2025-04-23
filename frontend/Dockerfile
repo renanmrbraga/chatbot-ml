@@ -1,18 +1,24 @@
 # frontend/Dockerfile
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
+# Copia pacotes e instala dependências do projeto
 COPY package*.json ./
 RUN npm install
 
-# Instala dependências pro script
-RUN apk add --no-cache bash curl jq
-
+# Copia o restante do app (src, public, vite.config.ts, etc)
 COPY . .
 
-# Permissão para o entrypoint
-RUN chmod +x entrypoint.sh
+# Instala ferramentas essenciais e o ngrok globalmente
+RUN apt-get update && apt-get install -y curl jq bash && rm -rf /var/lib/apt/lists/*
+RUN npm install -g ngrok
 
-EXPOSE 3000
-CMD ["./entrypoint.sh"]
+# Torna o script de entrada executável
+RUN chmod +x ./ngrok/entrypoint.sh
+
+# Expondo a porta do Vite (frontend)
+EXPOSE 8080
+
+# Comando principal
+CMD ["./ngrok/entrypoint.sh"]

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Chat from '@/components/Chat';
 
@@ -11,14 +10,15 @@ const Index = () => {
             🤖 Chatbot PPPs Insight
           </h1>
           <p className="text-gray-300 max-w-lg mx-auto">
-            Faça perguntas sobre PPPs e obtenha insights com análises detalhadas e dados comparativos
+            Faça perguntas sobre PPPs e obtenha insights com análises detalhadas e dados
+            comparativos
           </p>
         </header>
-        
+
         <main>
           <Chat />
         </main>
-        
+
         <footer className="mt-8 text-center text-xs text-gray-500">
           <p>© 2025 Chatbot PPPs Insight • Todos os direitos reservados</p>
         </footer>

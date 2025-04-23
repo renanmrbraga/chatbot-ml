@@ -1,5 +1,8 @@
-# backend/core/agents/economia_agent.py
+# core/agents/economia_agent.py
+from __future__ import annotations
+
 import pandas as pd
+from typing import Any, Dict, List, Optional
 
 from database.connection import get_engine
 from core.router.semantic_city import detectar_cidades
@@ -10,11 +13,13 @@ logger = get_logger(__name__)
 
 
 class EconomiaAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         self.tema = "economia"
         logger.debug(f"🧠 {self.__class__.__name__} inicializado.")
 
-    def get_dados(self, pergunta: str, cidades_detectadas: list[dict] = None) -> dict:
+    def get_dados(
+        self, pergunta: str, cidades_detectadas: Optional[List[Dict[str, Any]]] = None
+    ) -> Dict[str, Any]:
         logger.info(f"💰 Analisando pergunta econômica: {pergunta}")
         cidades = cidades_detectadas or detectar_cidades(pergunta, max_cidades=1)
         cidade_info = cidades[0] if cidades else None
@@ -25,7 +30,7 @@ class EconomiaAgent:
                 "tipo": "erro",
                 "mensagem": "Não foi possível identificar uma cidade válida para análise econômica.",
                 "dados": None,
-                "fontes": []
+                "fontes": [],
             }
 
         nome, uf = cidade_info["nome"], cidade_info["uf"]
@@ -34,10 +39,10 @@ class EconomiaAgent:
         try:
             query = """
                 SELECT cidade, estado, pib_per_capita, ano_pib
-                FROM dados_municipios
+                FROM municipios
                 WHERE cidade = %(cidade)s
             """
-            df = pd.read_sql(query, con=get_engine(), params={"cidade": nome})  # ✅ CORRIGIDO
+            df = pd.read_sql(query, con=get_engine(), params={"cidade": nome})
 
             if df.empty:
                 logger.warning(f"⚠️ Nenhum dado econômico encontrado para {nome}.")
@@ -45,24 +50,24 @@ class EconomiaAgent:
                     "tipo": "erro",
                     "mensagem": f"Não foram encontrados dados econômicos para {nome}.",
                     "dados": None,
-                    "fontes": []
+                    "fontes": [],
                 }
 
-            dados_dict = df.to_dict(orient="records")
+            dados_dict: List[Dict[str, Any]] = df.to_dict(orient="records")
             logger.info(f"✅ Dados econômicos recuperados com sucesso para {nome}.")
 
             resposta = gerar_resposta(
                 pergunta=pergunta,
                 dados=dados_dict,
                 tema=self.tema,
-                fontes=["PostgreSQL"]
+                fontes=["PostgreSQL"],
             )
 
             return {
                 "tipo": "resposta",
                 "mensagem": resposta,
                 "dados": dados_dict,
-                "fontes": ["PostgreSQL"]
+                "fontes": ["PostgreSQL"],
             }
 
         except Exception as e:
@@ -72,5 +77,5 @@ class EconomiaAgent:
                 "mensagem": "Ocorreu um erro ao consultar os dados econômicos.",
                 "dados": None,
                 "fontes": [],
-                "erro": str(e)
+                "erro": str(e),
             }

@@ -1,0 +1,14 @@
+{
+  "include": ["backend", "scraper"],
+  "exclude": ["**/__pycache__", "**/node_modules", "**/.venv"],
+  "typeCheckingMode": "strict",
+  "reportMissingImports": true,
+  "reportUnusedImport": "warning",
+  "reportUnusedVariable": "warning",
+  "reportOptionalMemberAccess": true,
+  "reportOptionalSubscript": true,
+  "reportPrivateImportUsage": true,
+  "strictListInference": true,
+  "strictDictionaryInference": true,
+  "strictParameterNoneValue": true
+}

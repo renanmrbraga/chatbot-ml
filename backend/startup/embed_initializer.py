@@ -1,8 +1,10 @@
-# backend/startup/embed_initializer.py
+# startup/embed_initializer.py
 import os
 import numpy as np
+
 from sentence_transformers import SentenceTransformer
-from core.router.semantic_city import carregar_cidades, normalizar
+
+from core.router.semantic_city import carregar_cidades
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -11,9 +13,11 @@ EMBEDDINGS_PATH = "data/embeddings_cidades.npz"
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
 
 
-def inicializar_embeddings():
+def inicializar_embeddings() -> None:
     if os.path.exists(EMBEDDINGS_PATH):
-        logger.info("📂 Embeddings de cidades já estão salvos. Nenhuma ação necessária.")
+        logger.info(
+            "📂 Embeddings de cidades já estão salvos. Nenhuma ação necessária."
+        )
         return
 
     logger.info("⚙️ Nenhum embedding encontrado. Iniciando geração...")

@@ -1,29 +1,41 @@
-# backend/core/handlers/fallback_handler.py
+# core/handlers/fallback_handler.py
+from __future__ import annotations
+
+from typing import Optional, Tuple, List, Dict, Any
+
 from core.router.semantic_city import detectar_cidades
 from core.llm.engine import gerar_resposta
 from core.agents.educacao_agent import EducacaoAgent
 from utils.retriever import buscar_contexto
-from utils.formatters import formatar_contexto_para_llm  # ✅ NOVO
+from utils.formatters import formatar_contexto_para_llm
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-def executar_fallback(pergunta: str):
+
+def executar_fallback(pergunta: str) -> Tuple[
+    str,  # resposta
+    List[str],  # fontes
+    Optional[Dict[str, Any]],  # cidade_info
+    Optional[Any],  # agente
+]:
     logger.warning("🟡 Nenhum agente atribuído. Iniciando fallback híbrido.")
 
-    cidade_info = None
-    fontes = []
-    resposta = "🤖 Não consegui identificar a cidade nem encontrar dados relevantes."
-    agente = None
+    cidade_info: Optional[Dict[str, Any]] = None
+    fontes: List[str] = []
+    resposta: str = (
+        "🤖 Não consegui identificar a cidade nem encontrar dados relevantes."
+    )
+    agente: Optional[Any] = None
 
     try:
-        # 1️⃣ Detecta cidades
         cidades = detectar_cidades(pergunta)
         cidade_info = cidades[0] if cidades else None
 
-        # 2️⃣ Fallback estruturado: tenta via EducacaoAgent
         if cidade_info:
-            logger.info(f"📍 Tentando fallback estruturado via Educação para cidade: {cidade_info['nome']}")
+            logger.info(
+                f"📍 Tentando fallback estruturado via Educação para cidade: {cidade_info['nome']}"
+            )
             agente = EducacaoAgent()
             dados = agente.get_dados(pergunta)
 
@@ -36,13 +48,14 @@ def executar_fallback(pergunta: str):
             else:
                 logger.warning("⚠️ Fallback estruturado via Educação falhou.")
 
-        # 3️⃣ Fallback semântico: busca por embeddings
         logger.info("📚 Buscando contexto por embeddings (RAG)")
         documentos, metadatas = buscar_contexto(pergunta)
 
         if documentos:
-            contexto, fontes = formatar_contexto_para_llm(documentos, metadatas)  # ✅ USO DO FORMATTER
-            resposta = gerar_resposta(pergunta, {"context": contexto}, tema="institucional", fontes=fontes)
+            contexto, fontes = formatar_contexto_para_llm(documentos, metadatas)
+            resposta = gerar_resposta(
+                pergunta, {"context": contexto}, tema="institucional", fontes=fontes
+            )
             return resposta, fontes, None, None
 
         logger.warning("⚠️ Nenhum documento relevante encontrado via embeddings.")

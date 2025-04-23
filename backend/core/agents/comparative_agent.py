@@ -1,11 +1,19 @@
-# backend/core/agents/comparative_agent.py
+# core/agents/comparative_agent.py
+from __future__ import annotations
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
 
+from typing import Optional, Any, Literal, Union, Dict, List
 from database.connection import get_engine
-from core.llm.engine import gerar_resposta, gerar_chave_cache, carregar_do_cache, salvar_em_cache
+from core.llm.engine import (
+    gerar_resposta,
+    gerar_chave_cache,
+    carregar_do_cache,
+    salvar_em_cache,
+)
 from core.router.semantic_city import detectar_cidades
 from core.router.semantic_metric import classificar_metrica
 from utils.logger import get_logger
@@ -13,13 +21,19 @@ from utils.export_utils import exportar_csv_base64, exportar_pdf_base64
 
 logger = get_logger(__name__)
 
+RespostaTipo = Dict[str, Union[str, List[Dict[str, Any]], None]]
+
 
 class ComparativeAgent:
-    def __init__(self):
-        self.tema = "dashboard"
+    def __init__(self) -> None:
+        self.tema: Literal["comparative"] = "comparative"
         logger.debug(f"🧠 {self.__class__.__name__} inicializado.")
 
-    def get_dados(self, pergunta: str, cidades_detectadas: list[dict] = None) -> dict:
+    def get_dados(
+        self,
+        pergunta: str,
+        cidades_detectadas: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
         logger.info(f"📊 Analisando pergunta: {pergunta}")
         cidades = cidades_detectadas or detectar_cidades(pergunta, max_cidades=10)
 
@@ -29,33 +43,40 @@ class ComparativeAgent:
                 "tipo": "erro",
                 "mensagem": "A pergunta deve mencionar pelo menos duas cidades para comparação.",
                 "dados": None,
-                "fontes": []
+                "fontes": [],
             }
 
         return self._comparar_cidades(cidades, pergunta)
 
-    def _comparar_cidades(self, cidades: list[dict], pergunta: str) -> dict:
+    def _comparar_cidades(
+        self, cidades: List[Dict[str, Any]], pergunta: str
+    ) -> Dict[str, Any]:
         nomes = [c["nome"] for c in cidades]
         logger.info(f"🏙️ Cidades para comparação: {', '.join(nomes)}")
 
         metrica, label = classificar_metrica(pergunta)
-        logger.info(f"📈 Métrica classificada: {label} ({metrica or 'comparação geral'})")
+        logger.info(
+            f"📈 Métrica classificada: {label} ({metrica or 'comparação geral'})"
+        )
 
         if metrica:
             query = f"""
-                SELECT cidade, estado, {metrica} AS valor, populacao
-                FROM dados_municipios
+                SELECT cidade, estado, {metrica} AS valor, populacao_total AS populacao
+                FROM municipios
                 WHERE cidade = ANY(%s)
             """
         else:
             query = """
                 SELECT cidade, estado,
-                       populacao, pib_per_capita,
-                       matriculas_fundamental, matriculas_medio,
-                       escolas_fundamental, escolas_medio,
-                       infra_basica_biblioteca, infra_basica_quadra_esportes,
-                       cursos_tecnicos_ofertados
-                FROM dados_municipios
+                       populacao_total AS populacao, pib_per_capita,
+                       matriculas_ensino_fundamental,
+                       matriculas_ensino_medio,
+                       escolas_ensino_fundamental,
+                       escolas_ensino_medio,
+                       escolas_com_biblioteca,
+                       escolas_com_quadra_esportes,
+                       total_cursos_tecnicos
+                FROM municipios
                 WHERE cidade = ANY(%s)
             """
 
@@ -67,7 +88,7 @@ class ComparativeAgent:
                 "tipo": "erro",
                 "mensagem": "Erro ao consultar o banco de dados.",
                 "dados": None,
-                "fontes": []
+                "fontes": [],
             }
 
         if df.empty or df["cidade"].nunique() < 2:
@@ -76,7 +97,7 @@ class ComparativeAgent:
                 "tipo": "erro",
                 "mensagem": "Não foi possível encontrar dados suficientes para comparar essas cidades.",
                 "dados": None,
-                "fontes": []
+                "fontes": [],
             }
 
         dados_dict = df.to_dict(orient="records")
@@ -91,7 +112,7 @@ class ComparativeAgent:
                 pergunta=pergunta,
                 dados=dados_dict,
                 tema=self.tema,
-                fontes=["PostgreSQL"]
+                fontes=["PostgreSQL"],
             )
             salvar_em_cache(chave, resposta)
 
@@ -99,9 +120,10 @@ class ComparativeAgent:
         if "valor" in df.columns:
             imagem_base64 = self._gerar_grafico(df, coluna="valor", label=label)
         elif "populacao" in df.columns:
-            imagem_base64 = self._gerar_grafico(df, coluna="populacao", label="População")
+            imagem_base64 = self._gerar_grafico(
+                df, coluna="populacao", label="População"
+            )
 
-        # 🧠 Cidade com maior população será usada como referência para UF no log
         cidade_base = df.loc[df["populacao"].idxmax()]
         cidade_info = [{"nome": cidade_base["cidade"], "uf": cidade_base["estado"]}]
 
@@ -113,7 +135,7 @@ class ComparativeAgent:
             "imagem_base64": imagem_base64,
             "csv_base64": exportar_csv_base64(df),
             "pdf_base64": exportar_pdf_base64(df, titulo=f"Comparação: {label}"),
-            "cidade_info": cidade_info  # <- ⚠️ CRUCIAL para log correto
+            "cidade_info": cidade_info,
         }
 
     def _gerar_grafico(self, df: pd.DataFrame, coluna: str, label: str) -> str:

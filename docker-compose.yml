@@ -1,72 +1,91 @@
 services:
-  backend:
-    build:
-      context: ./backend
-    container_name: chatbot_backend
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
-    depends_on:
-      - postgres
-      - mongo
-    volumes:
-      - ./backend:/app
-    networks:
-      - chatbot-net
-
-  frontend:
-    build:
-      context: ./frontend
-    container_name: chatbot_frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-    networks:
-      - chatbot-net
-
-  ngrok:
-    image: ngrok/ngrok:latest
-    container_name: chatbot_ngrok
-    command: http frontend:3000
-    env_file:
-      - ./ngrok/.env
-    depends_on:
-      - frontend
-    networks:
-      - chatbot-net
-
   postgres:
-    image: postgres:15
+    image: postgres:latest
     container_name: chatbot_postgres
     ports:
-      - "5432:5432"
+      - '5432:5432' # ✅ Comentar em produção
     environment:
       POSTGRES_DB: chatbot
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: devmode123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
     networks:
       - chatbot-net
 
   mongo:
-    image: mongo:6
+    image: mongo:latest
     container_name: chatbot_mongo
     ports:
-      - "27017:27017"
+      - '27017:27017' # ✅ Comentar em produção
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: devmode123
     volumes:
       - mongo_data:/data/db
+      - ./mongo/mongod.conf:/etc/mongod.conf:ro
+      - ./mongo/log:/var/log/mongodb:rw
+    user: root
+    command: ['mongod', '--auth', '--config', '/etc/mongod.conf']
     networks:
       - chatbot-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chatbot_backend
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - ./frontend/ngrok/.env.runtime:/app/ngrok_env.env:ro
+    expose:
+      - '8000'
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - chatbot-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chatbot_frontend
+    env_file:
+      - ./frontend/.env
+    environment:
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=8080
+      - WAIT_FOR_BACKEND=true
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./frontend:/app
+      - ./frontend/.env:/app/.env
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - chatbot-net
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
 
 volumes:
   postgres_data:
   mongo_data:
+  frontend_node_modules:
 
 networks:
   chatbot-net:

@@ -1,7 +1,9 @@
-# backend/database/mongo_logger.py
+# database/mongo_logger.py
+import os
+from typing import List
+
 from pymongo import MongoClient, errors
 from datetime import datetime
-import os
 
 from utils.logger import get_logger
 
@@ -11,7 +13,15 @@ MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017/")
 client = MongoClient(MONGO_URL)
 collection = client.chatbot_logs.messages
 
-def log_interacao(session_id: str, user_input: str, resposta: str, agente: str, cidades: list[str], tema: str):
+
+def log_interacao(
+    session_id: str,
+    user_input: str,
+    resposta: str,
+    agente: str,
+    cidades: List[str],
+    tema: str,
+) -> None:
     """
     Registra uma interação completa no MongoDB com segurança.
     """

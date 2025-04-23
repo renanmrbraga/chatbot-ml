@@ -18,7 +18,7 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 - [📊 Fontes de Dados](#-fontes-de-dados)
 - [⚙️ Arquitetura](#️-arquitetura)
 - [🧰 Tecnologias](#-tecnologias)
-- [💬 Exemplos de Perguntas](#-exemplos-de-perguntas)
+- [💬 Documentos](#-exemplos-de-perguntas)
 - [🚀 Setup](#-setup)
 - [📄 Licença](#-licença)
 - [📢 Notice](#-notice)
@@ -28,21 +28,21 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 ## ✨ Funcionalidades
 
 - Consulta inteligente por município (`população`, `PIB`, `infraestrutura`, `escolas`, etc.)
-- Comparações com gráficos interativos entre cidades
-- Respostas interpretadas por LLM (`gemma-2-9b-it` via Groq)
+- Comparativos entre cidades com gráficos interativos
+- Geração de resposta interpretada por LLM (`gemma-2-9b-it` via Groq)
 - Fallback com **Pinecone + embeddings Cohere**
-- Logs completos no PostgreSQL (mensagens, agentes, cidades, fonte de dados, dashboards)
-- Backend em FastAPI pronto para conexão com seu frontend preferido
-- Painel de frontend futurista e leve com React + Tailwind + Vite
-- Integração modular com API pública do IBGE e dados educacionais do INEP
-- Pipeline robusto de scraping e ETL com integração PostgreSQL
+- Logs completos em MongoDB (mensagens, cidades, agentes, dashboards gerados)
+- Backend FastAPI + API REST estruturada
+- Frontend futurista (React + Vite + Tailwind)
+- Integração com APIs do IBGE e dados educacionais do INEP
+- Pipeline de scraping e ETL com PostgreSQL
 
 ---
 
 ## 📊 Fontes de Dados
 
 - **IBGE / SIDRA** – População e PIB
-- **INEP / Censo Escolar 2023** – Matrículas, escolas, docentes, infraestrutura
+- **INEP / Censo Escolar 2023** – Matrículas, escolas, docentes, infraestrutura escolar
 - **QEdu** e outras fontes públicas (em expansão)
 - **Dados tratados e integrados por `codigo_ibge`**
 
@@ -52,30 +52,66 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 
 ```
 📁 backend/
-│   ├── core/               # Agentes, roteadores, LLMs, prompts
-│   ├── data/               # Dados brutos, processados e embeddings gerados
-│   ├── database/           # Conexão com PostgreSQL
-│   ├── logs/               # Arquivos de logs
-│   ├── scraping/           # Scrapers e ETL
-│   ├── startup/            # Inicialização automática de embeddings
-│   ├── tests/              # Arquivos de testes
-│   ├── uploads-temp/       # Upload de arquivos
-│   ├── utils/              # Funções auxiliares (logs, embeddings, etc)
-│   ├── main.py             # Entrypoint FastAPI
-│   ├── .env                # Configurações do backend
-│   ├── .env.example        # Modelo de variáveis para backend
-│   └── requirements.txt    # Dependências
+│   ├── core/                           # Agentes semânticos, roteadores, prompts e engine LLM
+│   ├── data/                           # Dados baixados e embeddings locais gerados
+│   ├── database/                       # Conexões e funções auxiliares para PostgreSQL e MongoDB
+│   ├── nginx/                          # NGINX + Certbot para TLS (HTTPS) no backend FastAPI
+│   ├── startup/                        # Inicialização automática de embeddings e serviços
+│   ├── tests/                          # Testes automatizados do backend
+│   ├── uploads-temp/                   # Diretório temporário para uploads do usuário
+│   ├── utils/                          # Funções utilitárias (logs, embedder, retriever, etc.)
+│   ├── .dockerignore                   # Arquivos ignorados no build da imagem Docker do backend
+│   ├── .env                            # Variáveis de ambiente reais (não versionadas)
+│   ├── .env.example                    # Modelo de variáveis para ambiente backend
+│   ├── Dockerfile                      # Dockerfile com build do backend em FastAPI
+│   ├── main.py                         # Entrypoint principal da API FastAPI
+│   └── requirements.txt                # Dependências Python do backend
+│
+📁 docs/
+│   ├── Explicação.md                   # Documento de Business Understanding do projeto
+│   └── Perguntas.md                    # Exemplos prontos de perguntas ao chatbot
 │
 📁 frontend/
-│   ├── public/             # Assets públicos
-│   ├── src/                # Interface do chat
-│   ├── .env                # Configurações do frontend
-│   └── .env.example        # Modelo de variáveis para frontend
+│   ├── ngrok/                          # Variáveis do ngrok e script para expor endereço no terminal
+│   ├── public/                         # Assets públicos servidos pelo Vite (favicon, index, etc.)
+│   ├── src/                            # Interface do chatbot (React + TypeScript)
+│   ├── .dockerignore                   # Arquivos ignorados no build da imagem Docker do frontend
+│   ├── .env                            # Variáveis de ambiente reais do frontend
+│   ├── .env.example                    # Modelo de variáveis para frontend
+│   ├── components.json                 # Configurações opcionais de componentes dinâmicos
+│   ├── Dockerfile                      # Dockerfile do frontend com suporte ao ngrok
+│   ├── eslint.config.js                # Configuração do ESLint (análise estática do código)
+│   ├── index.html                      # HTML base usado pelo Vite para montar o app
+│   ├── package.json                    # Lista de dependências, scripts e metadados do frontend
+│   ├── package-lock.json               # Lockfile gerado pelo NPM com versões exatas
+│   ├── postcss.config.js               # Plugins de pós-processamento CSS (ex: autoprefixer)
+│   ├── tailwind.config.ts              # Configurações visuais customizadas do Tailwind
+│   ├── tsconfig.app.json               # Configuração TypeScript para a aplicação React
+│   ├── tsconfig.json                   # Configuração global do TypeScript
+│   ├── tsconfig.node.json              # Configuração para scripts/utilitários Node.js
+│   └── vite.config.ts                  # Configuração do Vite (server, proxy, plugins)
 │
-├── .gitignore
-├── LICENSE
-├── NOTICE.md
-└── README.md
+📁 mongo/
+│   └── mongod.conf                     # Arquivo de configuração do MongoDB (log, path, porta)
+│
+📁 postgres/
+│   ├── init.sql                        # Script de inicialização do banco PostgreSQL (tabelas, dados)
+│   ├── pg_hba.conf                     # Configuração de acesso do PostgreSQL (host-based authentication)
+│   └── postgresql.conf                 # Configuração geral do PostgreSQL (port, logging, etc.)
+│
+📁 scraper/
+│   ├── config/                         # Arquivos de configuração e parâmetros de scraping
+│   ├── core/                           # Scrapers principais (SIDRA, INEP, QEdu, Portal da Transparência)
+│   ├── data/                           # Dados brutos, limpos e tratados pelo pipeline ETL
+│   ├── utils/                          # Funções auxiliares de scraping e transformação
+│   ├── requirements.txt                # Dependências Python do scraper
+│   └── scraper.py                      # Pipeline central do scraping (orquestração dos módulos)
+│
+├── .gitignore                          # Arquivos e pastas ignoradas pelo Git (ex: .env, __pycache__)
+├── docker-compose.yml                  # Orquestração de todos os serviços com Docker Compose
+├── LICENSE                             # Licença MIT do projeto
+├── NOTICE.md                           # Avisos sobre uso de dados públicos e fontes oficiais
+└── README.md                           # Documentação principal do projeto
 ```
 
 ---
@@ -88,18 +124,16 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 | **Frontend**       | TypeScript + React + Tailwind CSS + Vite                                      |
 | **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers                                     |
 | **RAG**            | Cohere Embeddings + Pinecone + fallback local HuggingFace                     |
-| **Orquestração**   | Agents semânticos + roteamento inteligente + prompts temáticos                |
+| **Orquestração**   | Agents semânticos + roteamento inteligente                                    |
 | **Dashboards**     | Exportação como imagem base64                                                 |
 | **Infraestrutura** | Docker + logging estruturado + inicialização automática                       |
 
 ---
 
-## 💬 Exemplos de Perguntas
+## 💬 Documentos
 
-- "Quantas escolas de ensino médio existem em Curitiba?"
-- "Compare escolas técnicas entre Porto Alegre e Curitiba"
-- "Quem tem mais professores: Recife ou Fortaleza?"
-- "Qual o PIB de Santa Catarina?"
+- Para o Business Understanding, veja [Explicação](docs/Explicação.md).
+- Para exemplos de pergunas, veja [Perguntas](docs/Perguntas.md).
 
 ---
 
@@ -125,22 +159,34 @@ Copie os exemplos:
 ```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
-cp ngrok/.env.example ngrok/.env
+cp frontend/ngrok/.env.example ngrok/.env
 ```
 
-### 4. .env.example
+### 4. Configure as variáveis de ambiente (exemplo)
 
 #### Backend
 ```dotenv
-DATABASE_URL=postgresql://usuario:senha@localhost:5432/seubanco
-GROQ_API_KEY=sua-chave-aqui
-PINECONE_API_KEY=sua-chave-aqui
-PINECONE_ENVIRONMENT=seu-environment-aqui
-PINECONE_INDEX=seu-index-aqui
-COLLECTION_NAME=seu-index-aqui
-COHERE_API_KEY=sua-chave-aqui
+# === DATABASE ===
+DATABASE_URL=postgresql+psycopg://postgres:devmode123@chatbot_postgres:5432/chatbot
+
+# === MONGODB (logs) - opcional se usar logs em NoSQL
+MONGO_URL=mongodb://chatbot_mongo:27017/
+
+# === LLM (Groq - Gemma 2B) ===
+GROQ_API_KEY=sua-chave-groq
+
+# === PINECONE (Embeddings Vetoriais) ===
+PINECONE_API_KEY=sua-chave-pinecone
+PINECONE_ENVIRONMENT=us-east-1
+PINECONE_INDEX=chatbot-llm
+
+# === COHERE (Fallback Semântico) ===
+COHERE_API_KEY=sua-chave-cohere
 EMBEDDING_PROVIDER=cohere
 EMBEDDING_MODEL=embed-english-v3.0
+
+# === PERFORMANCE ===
+PERFORMANCE_LEVEL=auto  # auto | turbo | minimal
 ```
 
 #### Frontend
@@ -148,9 +194,10 @@ EMBEDDING_MODEL=embed-english-v3.0
 VITE_API_URL=http://localhost:8000
 ```
 
-#### NGROK
+#### Ngrok
 ```dotenv
 NGROK_AUTHTOKEN=sua-chave-ngrok
+```
 
 ### 5. Suba o sistema com Docker Compose
 
@@ -162,6 +209,7 @@ Acesse:
 
 - Backend: `http://localhost:8000`
 - Frontend: `http://localhost:5173`
+- Ngrok (link online): gerado dinamicamente no terminal
 
 ---
 
@@ -173,7 +221,7 @@ Este projeto está licenciado sob os termos da [Licença MIT](./LICENSE).
 
 ## 📢 Notice
 
-Este sistema usa dados públicos de fontes oficiais (IBGE, INEP, QEdu, etc.).  
-Os dados podem conter limitações, defasagens ou mudanças futuras.  
-Este sistema é apenas para fins analíticos e educacionais.  
+Este sistema usa dados públicos de fontes oficiais (IBGE, INEP, QEdu, etc.).
+Os dados podem conter limitações, defasagens ou mudanças futuras.
+Este sistema é apenas para fins analíticos e educacionais.
 Para informações oficiais, consulte os portais originais – veja o [NOTICE.md](./NOTICE.md).

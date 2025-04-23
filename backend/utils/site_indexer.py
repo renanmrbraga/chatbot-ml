@@ -1,22 +1,38 @@
 # backend/utils/site_indexer.py
 import sys
 import requests
+
+from typing import Optional
 from bs4 import BeautifulSoup
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+from config.config import PINECONE_API_KEY
 from utils.embedder import get_vectorstore
 from utils.logger import get_logger
-from utils.config import PINECONE_API_KEY
 
 logger = get_logger(__name__)
 
+
 def limpar_html(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
-    for tag in soup(["script", "style", "noscript", "iframe", "svg", "header", "footer", "form", "nav"]):
+    for tag in soup(
+        [
+            "script",
+            "style",
+            "noscript",
+            "iframe",
+            "svg",
+            "header",
+            "footer",
+            "form",
+            "nav",
+        ]
+    ):
         tag.decompose()
     texto = soup.get_text(separator="\n")
     linhas = [linha.strip() for linha in texto.splitlines()]
     return "\n".join([linha for linha in linhas if linha])
+
 
 def extrair_conteudo_site(url: str) -> str:
     try:
@@ -35,7 +51,8 @@ def extrair_conteudo_site(url: str) -> str:
         logger.error(f"❌ Erro ao acessar {url}: {e}")
         return ""
 
-def indexar_site(url: str, topico: str = None):
+
+def indexar_site(url: str, topico: Optional[str] = None) -> None:
     if not PINECONE_API_KEY:
         logger.error("🚫 Pinecone não configurado. A indexação está desativada.")
         return
@@ -46,9 +63,7 @@ def indexar_site(url: str, topico: str = None):
         return
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=100,
-        separators=["\n\n", "\n", ".", " "]
+        chunk_size=800, chunk_overlap=100, separators=["\n\n", "\n", ".", " "]
     )
     chunks = splitter.split_text(texto)
 
@@ -57,11 +72,7 @@ def indexar_site(url: str, topico: str = None):
         return
 
     metadatas = [
-        {
-            "source": url,
-            "chunk": i,
-            "topico": topico or "website"
-        }
+        {"source": url, "chunk": i, "topico": topico or "website"}
         for i in range(len(chunks))
     ]
 
@@ -71,6 +82,7 @@ def indexar_site(url: str, topico: str = None):
         logger.info(f"✅ {len(chunks)} chunks indexados de {url}")
     except Exception as e:
         logger.error(f"❌ Erro ao indexar {url}: {e}")
+
 
 # ---------------- CLI ----------------
 if __name__ == "__main__":
