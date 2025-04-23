@@ -50,69 +50,114 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 
 ## ⚙️ Arquitetura
 
+<details>
+<summary><strong>📁 backend/</strong> — Backend em FastAPI</summary>
+
+```bash
+├── config/               # Configurações específicas do backend (ngrok, environment, etc.)
+├── core/                 # Agentes semânticos, roteadores, prompts e engine LLM
+├── data/                 # Dados baixados e embeddings locais gerados
+├── database/             # Conexões e funções auxiliares para PostgreSQL e MongoDB
+├── startup/              # Inicialização automática de embeddings e serviços
+├── tests/                # Testes automatizados do backend
+├── uploads-temp/         # Diretório temporário para uploads do usuário
+├── utils/                # Funções utilitárias (logs, embedder, retriever, etc.)
+├── .dockerignore         # Arquivos ignorados no build da imagem Docker do backend
+├── .env                  # Variáveis de ambiente reais (não versionadas)
+├── .env.example          # Modelo de variáveis para ambiente backend
+├── Dockerfile            # Dockerfile com build do backend em FastAPI
+├── main.py               # Entrypoint principal da API FastAPI
+└── requirements.txt      # Dependências Python do backend
 ```
-📁 backend/
-│   ├── core/                           # Agentes semânticos, roteadores, prompts e engine LLM
-│   ├── data/                           # Dados baixados e embeddings locais gerados
-│   ├── database/                       # Conexões e funções auxiliares para PostgreSQL e MongoDB
-│   ├── nginx/                          # NGINX + Certbot para TLS (HTTPS) no backend FastAPI
-│   ├── startup/                        # Inicialização automática de embeddings e serviços
-│   ├── tests/                          # Testes automatizados do backend
-│   ├── uploads-temp/                   # Diretório temporário para uploads do usuário
-│   ├── utils/                          # Funções utilitárias (logs, embedder, retriever, etc.)
-│   ├── .dockerignore                   # Arquivos ignorados no build da imagem Docker do backend
-│   ├── .env                            # Variáveis de ambiente reais (não versionadas)
-│   ├── .env.example                    # Modelo de variáveis para ambiente backend
-│   ├── Dockerfile                      # Dockerfile com build do backend em FastAPI
-│   ├── main.py                         # Entrypoint principal da API FastAPI
-│   └── requirements.txt                # Dependências Python do backend
-│
-📁 docs/
-│   ├── Explicação.md                   # Documento de Business Understanding do projeto
-│   └── Perguntas.md                    # Exemplos prontos de perguntas ao chatbot
-│
-📁 frontend/
-│   ├── ngrok/                          # Variáveis do ngrok e script para expor endereço no terminal
-│   ├── public/                         # Assets públicos servidos pelo Vite (favicon, index, etc.)
-│   ├── src/                            # Interface do chatbot (React + TypeScript)
-│   ├── .dockerignore                   # Arquivos ignorados no build da imagem Docker do frontend
-│   ├── .env                            # Variáveis de ambiente reais do frontend
-│   ├── .env.example                    # Modelo de variáveis para frontend
-│   ├── components.json                 # Configurações opcionais de componentes dinâmicos
-│   ├── Dockerfile                      # Dockerfile do frontend com suporte ao ngrok
-│   ├── eslint.config.js                # Configuração do ESLint (análise estática do código)
-│   ├── index.html                      # HTML base usado pelo Vite para montar o app
-│   ├── package.json                    # Lista de dependências, scripts e metadados do frontend
-│   ├── package-lock.json               # Lockfile gerado pelo NPM com versões exatas
-│   ├── postcss.config.js               # Plugins de pós-processamento CSS (ex: autoprefixer)
-│   ├── tailwind.config.ts              # Configurações visuais customizadas do Tailwind
-│   ├── tsconfig.app.json               # Configuração TypeScript para a aplicação React
-│   ├── tsconfig.json                   # Configuração global do TypeScript
-│   ├── tsconfig.node.json              # Configuração para scripts/utilitários Node.js
-│   └── vite.config.ts                  # Configuração do Vite (server, proxy, plugins)
-│
-📁 mongo/
-│   └── mongod.conf                     # Arquivo de configuração do MongoDB (log, path, porta)
-│
-📁 postgres/
-│   ├── init.sql                        # Script de inicialização do banco PostgreSQL (tabelas, dados)
-│   ├── pg_hba.conf                     # Configuração de acesso do PostgreSQL (host-based authentication)
-│   └── postgresql.conf                 # Configuração geral do PostgreSQL (port, logging, etc.)
-│
-📁 scraper/
-│   ├── config/                         # Arquivos de configuração e parâmetros de scraping
-│   ├── core/                           # Scrapers principais (SIDRA, INEP, QEdu, Portal da Transparência)
-│   ├── data/                           # Dados brutos, limpos e tratados pelo pipeline ETL
-│   ├── utils/                          # Funções auxiliares de scraping e transformação
-│   ├── requirements.txt                # Dependências Python do scraper
-│   └── scraper.py                      # Pipeline central do scraping (orquestração dos módulos)
-│
-├── .gitignore                          # Arquivos e pastas ignoradas pelo Git (ex: .env, __pycache__)
-├── docker-compose.yml                  # Orquestração de todos os serviços com Docker Compose
-├── LICENSE                             # Licença MIT do projeto
-├── NOTICE.md                           # Avisos sobre uso de dados públicos e fontes oficiais
-└── README.md                           # Documentação principal do projeto
+
+</details>
+
+<details>
+<summary><strong>📁 docs/</strong> — Documentação complementar</summary>
+
+```bash
+├── Explicação.md         # Documento de Business Understanding do projeto
+└── Perguntas.md          # Exemplos prontos de perguntas ao chatbot
 ```
+
+</details>
+
+<details>
+<summary><strong>📁 frontend/</strong> — Interface do Chatbot (React + Vite + TypeScript)</summary>
+
+```bash
+├── ngrok/                # Variáveis do ngrok e script para expor endereço no terminal
+├── public/               # Assets públicos servidos pelo Vite (favicon, index, etc.)
+├── src/                  # Interface do chatbot (React + TypeScript)
+├── .dockerignore         # Arquivos ignorados no build da imagem Docker do frontend
+├── .env                  # Variáveis de ambiente reais do frontend
+├── .env.example          # Modelo de variáveis para frontend
+├── components.json       # Configurações opcionais de componentes dinâmicos
+├── Dockerfile            # Dockerfile do frontend com suporte ao ngrok
+├── eslint.config.js      # Configuração do ESLint (análise estática do código)
+├── index.html            # HTML base usado pelo Vite para montar o app
+├── package.json          # Lista de dependências, scripts e metadados do frontend
+├── postcss.config.js     # Plugins de pós-processamento CSS (ex: autoprefixer)
+├── tailwind.config.ts    # Configurações visuais customizadas do Tailwind
+├── tsconfig.app.json     # Configuração TypeScript para a aplicação React
+├── tsconfig.json         # Configuração global do TypeScript
+├── tsconfig.node.json    # Configuração para scripts/utilitários Node.js
+├── vite.config.ts        # Configuração do Vite (server, proxy, plugins)
+└── yarn.lock             # Snapshot das dependências instaladas (Gerenciador Yarn)
+```
+
+</details>
+
+<details>
+<summary><strong>📁 mongo/</strong> — Configurações do MongoDB</summary>
+
+```bash
+└── mongod.conf           # Arquivo de configuração do MongoDB (log, path, porta)
+```
+
+</details>
+
+<details>
+<summary><strong>📁 postgres/</strong> — Configurações do PostgreSQL</summary>
+
+```bash
+├── init.sql              # Script de inicialização do banco PostgreSQL (tabelas, dados)
+├── pg_hba.conf           # Configuração de acesso do PostgreSQL (host-based authentication)
+└── postgresql.conf       # Configuração geral do PostgreSQL (port, logging, etc.)
+```
+
+</details>
+
+<details>
+<summary><strong>📁 scraper/</strong> — Pipelines de scraping e ETL</summary>
+
+```bash
+├── config/               # Arquivos de configuração e parâmetros de scraping
+├── core/                 # Scrapers principais (SIDRA, INEP, QEdu, Portal da Transparência)
+├── data/                 # Dados brutos, limpos e tratados pelo pipeline ETL
+├── utils/                # Funções auxiliares de scraping e transformação
+├── requirements.txt      # Dependências Python do scraper
+└── scraper.py            # Pipeline central do scraping (orquestração dos módulos)
+```
+
+</details>
+
+<details>
+<summary><strong>📁 raiz/</strong> — Configurações globais e arquivos principais</summary>
+
+```bash
+├── .gitignore                   # Arquivos e pastas ignoradas pelo Git (ex: .env, __pycache__)
+├── .pre-commit-config.yaml      # Configuração dos hooks automatizados de pré-commit
+├── .prettierrc                  # Regras de formatação automática para o frontend
+├── docker-compose.yml           # Orquestração de todos os serviços com Docker Compose
+├── LICENSE                      # Licença MIT do projeto
+├── mypy.ini                     # Regras de tipagem estática para o Python com mypy
+├── NOTICE.md                    # Avisos sobre uso de dados públicos e fontes oficiais
+├── pyrightconfig.json           # Regras de tipagem estática do TypeScript com Pyright
+└── README.md                    # Documentação principal do projeto
+```
+
+</details>
 
 ---
 
@@ -214,7 +259,7 @@ docker-compose up --build
 Acesse:
 
 - Backend: `http://localhost:8000`
-- Frontend: `http://localhost:5173`
+- Frontend: `http://localhost:8080`
 - Ngrok (link online): gerado dinamicamente no terminal
 
 ---
