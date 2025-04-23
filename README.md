@@ -166,11 +166,21 @@ cp frontend/.env.example frontend/.env
 #### Backend
 
 ```dotenv
-# === DATABASE ===
-DATABASE_URL=postgresql+psycopg://postgres:devmode123@chatbot_postgres:5432/chatbot
+# === POSTGRES ===
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=chatbot
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=devmode123
+DATABASE_URL=postgresql+psycopg://postgres:devmode123@postgres:5432/chatbot
 
-# === MONGODB (logs) - opcional se usar logs em NoSQL
-MONGO_URL=mongodb://chatbot_mongo:27017/
+# === MONGODB ===
+MONGO_HOST=mongo
+MONGO_PORT=27017
+MONGO_DB=chatbot_logs
+MONGO_USER=admin
+MONGO_PASSWORD=devmode123
+MONGO_URL=mongodb://admin:devmode123@mongo:27017/?authSource=admin
 
 # === LLM (Groq - Gemma 2B) ===
 GROQ_API_KEY=sua-chave-groq
@@ -178,15 +188,15 @@ GROQ_API_KEY=sua-chave-groq
 # === PINECONE (Embeddings Vetoriais) ===
 PINECONE_API_KEY=sua-chave-pinecone
 PINECONE_ENVIRONMENT=us-east-1
-PINECONE_INDEX=chatbot-llm
+PINECONE_INDEX=sua-index-pinecone
 
 # === COHERE (Fallback Semântico) ===
 COHERE_API_KEY=sua-chave-cohere
 EMBEDDING_PROVIDER=cohere
 EMBEDDING_MODEL=embed-english-v3.0
 
-# === PERFORMANCE ===
-PERFORMANCE_LEVEL=auto  # auto | turbo | minimal
+# === PERFOMANCE (auto | turbo | safe) ===
+PERFORMANCE_LEVEL=auto
 ```
 
 #### Frontend
