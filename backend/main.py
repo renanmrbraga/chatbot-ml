@@ -20,17 +20,16 @@ from startup.embed_initializer import inicializar_embeddings
 logger = get_logger(__name__)
 app = FastAPI(title="Chatbot PPPs API", version="1.0")
 
-# Garante que o diretório de embeddings existe
+# Inicia embeddings
 inicializar_embeddings()
 
 
-# -------------------- Schemas --------------------
 class ChatRequest(BaseModel):  # type: ignore[misc]
     pergunta: str
     session_id: str
 
 
-# -------------------- CORS --------------------
+# CORS
 ngrok_url = get_ngrok_origin()
 allow_origins: List[str] = [
     "https://chatbot-llm.vercel.app",
@@ -48,11 +47,9 @@ app.add_middleware(
 )
 
 
-# -------------------- Middleware de log de requisição --------------------
 @app.middleware("http")  # type: ignore[misc]
 async def log_request(
-    request: Request,
-    call_next: Callable[[Request], Awaitable[Response]],
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
 ) -> Response:
     body = await request.body()
     logger.debug(f"[RAW REQUEST] {body!r}")
@@ -60,30 +57,22 @@ async def log_request(
     return response
 
 
-# -------------------- Handler de erro de validação --------------------
 @app.exception_handler(RequestValidationError)  # type: ignore[misc]
 async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError,
+    request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     body = await request.body()
     logger.error(f"[VALIDATION ERROR] body={body!r} errors={exc.errors()}")
-    return JSONResponse(
-        status_code=422,
-        content={"detail": exc.errors()},
-    )
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 
-# -------------------- Endpoints --------------------
 @app.get("/health")  # type: ignore[misc]
 def health_check() -> Dict[str, str]:
     return {"status": "ok"}
 
 
 @app.post("/api/chat")  # type: ignore[misc]
-def chat_endpoint(
-    req: ChatRequest = Body(...),
-) -> JSONResponse:
+def chat_endpoint(req: ChatRequest = Body(...)) -> JSONResponse:
     logger.info(f"💬 Nova pergunta recebida | Sessão: {req.session_id}")
 
     (
@@ -93,23 +82,12 @@ def chat_endpoint(
         tema,
         agente,
         dados,
-        comparative_base64,
+        chart_data,
         csv_base64,
         pdf_base64,
     ) = processar_pergunta(req.pergunta, req.session_id)
 
     cidade, uf = extrair_nome_uf(cidade_info)
-
-    # Filtra apenas valores serializáveis em JSON
-    dados_serializaveis: Any = {}
-    if isinstance(dados, dict):
-        dados_serializaveis = {
-            k: v
-            for k, v in dados.items()
-            if not callable(v) and not hasattr(v, "__dict__")
-        }
-    elif isinstance(dados, list):
-        dados_serializaveis = dados
 
     return JSONResponse(
         {
@@ -119,8 +97,8 @@ def chat_endpoint(
             "cidade": cidade,
             "uf": uf,
             "tema": tema,
-            "dados_brutos": dados_serializaveis,
-            "comparative_base64": comparative_base64,
+            "dados_brutos": dados,
+            "chart_data": chart_data,
             "csv_base64": csv_base64,
             "pdf_base64": pdf_base64,
             "history": get_history_for_session(req.session_id),

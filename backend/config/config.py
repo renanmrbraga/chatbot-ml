@@ -26,9 +26,12 @@ if not GROQ_API_KEY:
 PINECONE_API_KEY: Optional[str] = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT: Optional[str] = os.getenv("PINECONE_ENVIRONMENT")
 PINECONE_INDEX: Optional[str] = os.getenv("PINECONE_INDEX")
-COHERE_API_KEY: Optional[str] = os.getenv("COHERE_API_KEY")
 EMBEDDING_PROVIDER: Optional[str] = os.getenv("EMBEDDING_PROVIDER")
 EMBEDDING_MODEL: Optional[str] = os.getenv("EMBEDDING_MODEL")
+
+# === Configurações de Performance ===
+PERFORMANCE_LEVEL: str = os.getenv("PERFORMANCE_LEVEL", "auto")
+EMBEDDINGS_PATH: Path = PROJETO_RAIZ / "data" / "embeddings_cidades.npz"
 
 # === Diretórios utilizados ===
 PROMPT_DIR: Path = PROJETO_RAIZ / "core" / "prompts"

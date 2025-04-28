@@ -30,7 +30,7 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 - Consulta inteligente por município (`população`, `PIB`, `infraestrutura`, `escolas`, etc.)
 - Comparativos entre cidades com gráficos interativos
 - Geração de resposta interpretada por LLM (`gemma-2-9b-it` via Groq)
-- Fallback com **Pinecone + embeddings Cohere**
+- Fallback com **HuggingFace + Pinecone Embeddings**
 - Logs completos em MongoDB (mensagens, cidades, agentes, dashboards gerados)
 - Backend FastAPI + API REST estruturada
 - Frontend futurista (React + Vite + Tailwind)
@@ -163,15 +163,15 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 
 ## 🧰 Tecnologias
 
-| Camada             | Tecnologias                                               |
-| ------------------ | --------------------------------------------------------- |
-| **Backend**        | Python + FastAPI + LangChain + Groq (`gemma-2-9b-it`)     |
-| **Frontend**       | TypeScript + React + Tailwind CSS + Vite                  |
-| **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers                 |
-| **RAG**            | Cohere Embeddings + Pinecone + fallback local HuggingFace |
-| **Orquestração**   | Agents semânticos + roteamento inteligente                |
-| **Dashboards**     | Exportação como imagem base64                             |
-| **Infraestrutura** | Docker + logging estruturado + inicialização automática   |
+| Camada             | Tecnologias                                             |
+| ------------------ | ------------------------------------------------------- |
+| **Backend**        | Python + FastAPI + LangChain + Groq (`gemma-2-9b-it`)   |
+| **Frontend**       | TypeScript + React + Tailwind CSS + Vite                |
+| **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers               |
+| **RAG**            | HuggingFace + Pinecone Embeddings                       |
+| **Orquestração**   | Agents semânticos + roteamento inteligente              |
+| **Dashboards**     | Exportação como imagem base64                           |
+| **Infraestrutura** | Docker + logging estruturado + inicialização automática |
 
 ---
 
@@ -235,10 +235,9 @@ PINECONE_API_KEY=sua-chave-pinecone
 PINECONE_ENVIRONMENT=us-east-1
 PINECONE_INDEX=sua-index-pinecone
 
-# === COHERE (Fallback Semântico) ===
-COHERE_API_KEY=sua-chave-cohere
-EMBEDDING_PROVIDER=cohere
-EMBEDDING_MODEL=embed-english-v3.0
+# === EMBEDDING CONFIGURATION ===
+EMBEDDING_PROVIDER=local
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
 
 # === PERFOMANCE (auto | turbo | safe) ===
 PERFORMANCE_LEVEL=auto

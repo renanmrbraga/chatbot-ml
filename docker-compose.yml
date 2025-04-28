@@ -3,7 +3,7 @@ services:
     image: postgres:latest
     container_name: chatbot_postgres
     ports:
-      - '5432:5432' # ✅ Comentar em produção
+      - '5432:5432' # Comentar em produção
     environment:
       POSTGRES_DB: chatbot
       POSTGRES_USER: postgres
@@ -26,7 +26,7 @@ services:
     image: mongo:latest
     container_name: chatbot_mongo
     ports:
-      - '27017:27017' # ✅ Comentar em produção
+      - '27017:27017' # Comentar em produção
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: devmode123
@@ -48,10 +48,8 @@ services:
       - ./backend/.env
     volumes:
       - ./backend:/app
-      - ./frontend/ngrok/.env.runtime:/app/ngrok_env.env:ro
     expose:
       - '8000'
-    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
     depends_on:
       - postgres
       - mongo
@@ -68,7 +66,8 @@ services:
     environment:
       - VITE_HOST=0.0.0.0
       - VITE_PORT=8080
-      - WAIT_FOR_BACKEND=true
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
     ports:
       - '8080:8080'
     volumes:

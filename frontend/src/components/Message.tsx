@@ -1,3 +1,4 @@
+// src/components/Message.tsx
 import { motion } from 'framer-motion';
 import React from 'react';
 
@@ -6,10 +7,9 @@ interface MessageProps {
   text: string;
   agent?: string | null;
   fontes?: string[] | null;
-  ComparativeImage?: string | null;
 }
 
-const Message: React.FC<MessageProps> = ({ role, text, agent, fontes, ComparativeImage }) => {
+const Message: React.FC<MessageProps> = ({ role, text, agent, fontes }) => {
   const isUser = role === 'user';
 
   return (
@@ -46,23 +46,6 @@ const Message: React.FC<MessageProps> = ({ role, text, agent, fontes, Comparativ
         <div className="whitespace-pre-line leading-relaxed font-light text-sm md:text-base tracking-wide">
           {text}
         </div>
-
-        {ComparativeImage && (
-          <motion.img
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            src={`data:image/png;base64,${ComparativeImage}`}
-            alt="Dashboard gerado"
-            className="mt-4 rounded-xl border border-chatbot-border/30 max-w-full shadow-md"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.src = '';
-              console.warn('⚠️ Erro ao carregar imagem base64');
-            }}
-          />
-        )}
       </div>
     </motion.div>
   );

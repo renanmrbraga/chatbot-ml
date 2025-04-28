@@ -18,6 +18,7 @@ env/
 ENV/
 env.bak/
 .venv.bak/
+.env.runtime
 
 # =====================
 # Cache / Build

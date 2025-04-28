@@ -1,28 +1,26 @@
-import React from 'react';
 import Chat from '@/components/Chat';
 
 const Index = () => {
   return (
-    <div className="min-h-screen chat-gradient py-10 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-chatbot-light text-glow tracking-tight">
-            🤖 Chatbot PPPs Insight
-          </h1>
-          <p className="text-gray-300 max-w-lg mx-auto">
-            Faça perguntas sobre PPPs e obtenha insights com análises detalhadas e dados
-            comparativos
-          </p>
-        </header>
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      {/* HEADER GERAL – visível sempre no topo */}
+      <header className="w-full bg-background/90 backdrop-blur-sm z-10 py-6 px-4 sm:px-6 flex flex-col items-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">🤖 Chatbot Zenith</h1>
+        <p className="text-gray-300 mt-1 text-center max-w-xl">
+          Faça perguntas sobre cidades e obtenha insights com análises detalhadas e dados
+          comparativos
+        </p>
+      </header>
 
-        <main>
-          <Chat />
-        </main>
+      {/* MAIN – container do chat */}
+      <main className="flex-1 bg-background p-4 sm:p-6 overflow-hidden">
+        <Chat />
+      </main>
 
-        <footer className="mt-8 text-center text-xs text-gray-500">
-          <p>© 2025 Chatbot PPPs Insight • Todos os direitos reservados</p>
-        </footer>
-      </div>
+      {/* FOOTER */}
+      <footer className="w-full bg-background/90 backdrop-blur-sm py-4 text-center text-xs text-gray-400">
+        © 2025 Chatbot Zenith • Todos os direitos reservados
+      </footer>
     </div>
   );
 };

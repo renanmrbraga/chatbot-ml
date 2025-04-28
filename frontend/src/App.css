@@ -1,8 +1,25 @@
+/* App.css */
+
+/* limpa todo container limitador */
+html,
+body,
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  overflow: hidden; /* evita dupla scrollbar */
+}
+
+.container,
+.mx-auto {
+  max-width: none;
 }
 
 .logo {
@@ -13,9 +30,6 @@
 }
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {

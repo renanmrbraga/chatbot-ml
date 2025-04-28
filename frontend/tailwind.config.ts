@@ -65,13 +65,17 @@ const config: Config = {
           ring: 'hsl(var(--sidebar-ring))',
         },
         chatbot: {
-          dark: '#0f0c29',
-          darker: '#121212',
-          accent: '#7B2CBF',
-          light: '#9F7AEA',
-          user: '#9061F9',
-          system: '#1A1A1A',
-          border: '#302b63',
+          // usa o seu --primary como cor de fundo das bolhas do user
+          user: 'hsl(var(--primary))',
+          // texto dentro das bolhas
+          light: 'hsl(var(--primary-foreground))',
+          // fundo das mensagens do sistema fica igual ao background de card
+          system: 'hsl(var(--card))',
+          // borda das mensagens
+          border: 'hsl(var(--border))',
+          // essas duas não são mais usadas, mas mantidas caso precise
+          dark: 'hsl(var(--background))',
+          darker: 'hsl(var(--card))',
         },
       },
       borderRadius: {

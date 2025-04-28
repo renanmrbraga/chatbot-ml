@@ -1,13 +1,11 @@
-# core/agents/agent_institucional.py
+# core/agents/institucional_agent.py
 from __future__ import annotations
 
 from typing import Any, Dict, Optional, List
-
-from langchain_core.documents import Document
 from utils.logger import get_logger
-from utils.embedder import get_vectorstore
+from utils.retriever import buscar_contexto
 from core.llm.engine import gerar_resposta
-from core.router.semantic_city import detectar_cidades
+from config.dicionarios import TEMPLATE_INSTITUCIONAL
 
 logger = get_logger(__name__)
 
@@ -21,38 +19,48 @@ class InstitucionalAgent:
         self, pergunta: str, cidades_detectadas: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         logger.info(f"🏢 Processando pergunta institucional: {pergunta}")
-        cidades = cidades_detectadas or detectar_cidades(pergunta)
-        cidade_info = cidades[0] if cidades else None  # noqa: F841
 
         try:
-            retriever = get_vectorstore().as_retriever()
-            documentos: List[Document] = retriever.invoke(pergunta)
+            textos, metadados = buscar_contexto(pergunta, top_k=5)
 
-            if not documentos:
-                logger.warning("⚠️ Nenhum documento institucional encontrado.")
+            # Fallback quando não há documentos
+            if not textos:
+                logger.warning(
+                    "⚠️ Nenhum documento institucional encontrado. Fallback LLM."
+                )
+                resposta_fallback = gerar_resposta(
+                    pergunta=pergunta,
+                    dados=[],
+                    tema=self.tema,
+                    fontes=[],
+                    prompt_template=TEMPLATE_INSTITUCIONAL,
+                    dados_formatados="",
+                )
                 return {
-                    "tipo": "erro",
-                    "mensagem": "Desculpe, não encontrei nenhuma informação institucional relevante para essa pergunta.",
-                    "dados": None,
+                    "tipo": "resposta",
+                    "mensagem": resposta_fallback,
+                    "dados": [],
                     "fontes": [],
                 }
 
-            contexto: str = "\n---\n".join([doc.page_content for doc in documentos])
-            fontes: List[str] = list(
-                set(doc.metadata.get("source", "Desconhecido") for doc in documentos)
-            )
+            # Concatena trechos de contexto
+            contexto = "\n---\n".join(textos)
+            fontes = list({meta.get("source", "Desconhecido") for meta in metadados})
 
-            resposta: str = gerar_resposta(
+            # Gera resposta usando template institucional
+            resposta = gerar_resposta(
                 pergunta=pergunta,
-                dados={"context": contexto},
+                dados=[{"context": contexto}],
                 tema=self.tema,
                 fontes=fontes,
+                prompt_template=TEMPLATE_INSTITUCIONAL,
+                dados_formatados=contexto,
             )
 
             return {
                 "tipo": "resposta",
                 "mensagem": resposta,
-                "dados": {"context": contexto},
+                "dados": [{"context": contexto}],
                 "fontes": fontes,
             }
 

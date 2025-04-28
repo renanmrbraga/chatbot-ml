@@ -1,10 +1,15 @@
+// src/services/api.ts
+import type { ChartData } from '@/components/ChartRenderer';
+
 const BASE_URL = '/api';
 
 export interface ChatResponse {
   resposta: string;
   agente: string;
   fontes?: string[];
-  comparative_base64?: string;
+  chart_data?: ChartData;
+  csv_base64?: string;
+  pdf_base64?: string;
 }
 
 export async function enviarPergunta(pergunta: string, sessionId: string): Promise<ChatResponse> {

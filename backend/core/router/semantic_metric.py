@@ -39,18 +39,22 @@ def classificar_metrica(pergunta: str) -> Tuple[str, str]:
 
         logger.debug(f"📨 Resposta bruta da LLM:\n{raw_content}")
 
-        content = re.sub(r"[`\n\r\t\"'\\]+", "", raw_content).strip()
+        # Tira quebras, aspas e caracteres estranhos
+        content = re.sub(r"[`\r\t\\]+", "", raw_content).strip()
         content_lower = content.lower()
 
         logger.debug(f"🧼 Conteúdo limpo da LLM:\n{content_lower}")
 
+        # Se for direto o nome da coluna
         if content_lower in METRICAS_VALIDAS:
             logger.info(f"✅ Métrica reconhecida diretamente: '{content_lower}'")
             return content_lower, METRICAS_VALIDAS[content_lower]
 
+        # Tenta extrair JSON
         try:
             parsed = json.loads(content_lower)
         except json.JSONDecodeError:
+            # Tenta via regex como fallback
             match = re.search(
                 r'"coluna"\s*:\s*"(?P<coluna>[\w_]+)".*?"label"\s*:\s*"(?P<label>[^"]+)"',
                 content_lower,
@@ -66,19 +70,17 @@ def classificar_metrica(pergunta: str) -> Tuple[str, str]:
                 logger.error(
                     f"❌ JSON inválido e regex falhou. Conteúdo:\n{content_lower}"
                 )
-                return "", "Comparação geral entre cidades"
+                return "populacao_total", METRICAS_VALIDAS["populacao_total"]
 
         coluna = parsed.get("coluna", "").strip().lower()
         label = parsed.get("label", METRICAS_VALIDAS.get(coluna, "")).strip()
 
         if not coluna or coluna not in METRICAS_VALIDAS:
-            logger.warning(
-                f"⚠️ Coluna inválida ou não reconhecida: '{coluna}' | Conteúdo limpo: '{content_lower}'"
-            )
-            return "", "Comparação geral entre cidades"
+            logger.warning(f"⚠️ Coluna inválida ou não reconhecida: '{coluna}'")
+            return "populacao_total", METRICAS_VALIDAS["populacao_total"]
 
-        return coluna, label or METRICAS_VALIDAS.get(coluna, "")
+        return coluna, label or METRICAS_VALIDAS[coluna]
 
     except Exception as e:
-        logger.warning(f"⚠️ Falha ao classificar métrica: {e}")
-        return "", "Comparação geral entre cidades (default)"
+        logger.error(f"❌ Erro inesperado ao classificar métrica: {e}")
+        return "populacao_total", METRICAS_VALIDAS["populacao_total"]

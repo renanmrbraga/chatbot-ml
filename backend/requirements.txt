@@ -11,6 +11,8 @@ pymongo
 pandas
 matplotlib
 fpdf
+streamlit
+streamlit-echarts
 
 # LLM + embeddings
 langchain
@@ -21,6 +23,7 @@ sentence-transformers
 transformers
 cohere
 pinecone
+langchain-huggingface
 
 # Auxiliares
 beautifulsoup4

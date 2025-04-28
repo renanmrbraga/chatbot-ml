@@ -1,16 +1,21 @@
 # core/router/interpreter.py
 from __future__ import annotations
 
-from typing import Tuple, Type, Union, Any, Dict, List, Protocol, runtime_checkable
-from core.agents.institucional_agent import InstitucionalAgent
+from typing import Tuple, Type, Dict, List, Any, Protocol, runtime_checkable
+import re
+from utils.logger import get_logger
 from core.router.semantic_router import classificar_tema
 from core.router.semantic_city import detectar_cidades
-from config.dicionarios import get_agents_disponiveis
-from utils.logger import get_logger
+
+from core.agents.educacao_agent import EducacaoAgent
+from core.agents.tecnica_agent import TecnicaAgent
+from core.agents.populacao_agent import PopulacaoAgent
+from core.agents.economia_agent import EconomiaAgent
+from core.agents.comparative_agent import ComparativeAgent
+from core.agents.institucional_agent import InstitucionalAgent
+from core.agents.llm_agent import LLMAgent
 
 logger = get_logger(__name__)
-
-AGENTS_DISPONIVEIS = get_agents_disponiveis()
 
 
 @runtime_checkable
@@ -18,6 +23,23 @@ class AgentType(Protocol):
     def get_dados(
         self, pergunta: str, cidades_detectadas: List[Dict[str, Any]]
     ) -> Dict[str, Any]: ...
+
+
+def load_agents() -> Dict[str, Type[AgentType]]:
+    # Mapeamento de agentes disponíveis
+    return {
+        "educacao": EducacaoAgent,
+        "educacao_tecnica": TecnicaAgent,
+        "tecnica": TecnicaAgent,
+        "populacao": PopulacaoAgent,
+        "economia": EconomiaAgent,
+        "comparative": ComparativeAgent,
+        "institucional": InstitucionalAgent,
+        "llm": LLMAgent,
+    }
+
+
+AGENTS_DISPONIVEIS = load_agents()
 
 
 def interpretar_pergunta(pergunta: str) -> Tuple[AgentType, str, List[Dict[str, Any]]]:
@@ -28,26 +50,30 @@ def interpretar_pergunta(pergunta: str) -> Tuple[AgentType, str, List[Dict[str, 
     logger.info("🔍 Interpretando pergunta recebida:")
     logger.info(pergunta)
 
+    # 1️⃣ Detectar cidades primeiro
     try:
-        tema: str = classificar_tema(pergunta)
-    except Exception as e:
-        logger.error(f"❌ Erro ao classificar tema: {e}")
-        tema = "desconhecido"
-
-    try:
-        cidades: List[Dict[str, Any]] = detectar_cidades(pergunta, max_cidades=10)
+        cidades = detectar_cidades(pergunta, max_cidades=10)
     except Exception as e:
         logger.error(f"❌ Erro ao detectar cidades: {e}")
         cidades = []
 
-    if tema in AGENTS_DISPONIVEIS:
-        agente_classe: Type[AgentType] = AGENTS_DISPONIVEIS[tema]
+    # 2️⃣ Se 2+ cidades, forçar comparative
+    if len(cidades) >= 2:
+        tema = "comparative"
         logger.info(
-            f"🤖 Tema identificado: {tema} | Agente selecionado: {agente_classe.__name__}"
+            f"⚙️ Mais de uma cidade detectada ({len(cidades)}). Override tema para 'comparative'."
         )
-        return agente_classe(), tema, cidades
+    else:
+        # 3️⃣ Classificar tema via classificar_tema
+        try:
+            tema = classificar_tema(pergunta)
+        except Exception as e:
+            logger.error(f"❌ Erro ao classificar tema: {e}")
+            tema = "institucional"
 
-    logger.warning(
-        f"⚠️ Tema '{tema}' não corresponde a nenhum agente estruturado. Usando InstitucionalAgent."
+    # 4️⃣ Selecionar agente: se tema não existir, usar LLMAgent
+    agente_classe = AGENTS_DISPONIVEIS.get(tema, LLMAgent)
+    logger.info(
+        f"🤖 Tema identificado: {tema} | Agente selecionado: {agente_classe.__name__}"
     )
-    return InstitucionalAgent(), "institucional", cidades
+    return agente_classe(), tema, cidades

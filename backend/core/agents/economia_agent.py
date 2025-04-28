@@ -1,12 +1,13 @@
 # core/agents/economia_agent.py
 from __future__ import annotations
-
 import pandas as pd
 from typing import Any, Dict, List, Optional
+from sqlalchemy import text
 
 from database.connection import get_engine
 from core.router.semantic_city import detectar_cidades
 from core.llm.engine import gerar_resposta
+from config.dicionarios import TEMPLATE_SINGLE_CITY
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -22,10 +23,7 @@ class EconomiaAgent:
     ) -> Dict[str, Any]:
         logger.info(f"💰 Analisando pergunta econômica: {pergunta}")
         cidades = cidades_detectadas or detectar_cidades(pergunta, max_cidades=1)
-        cidade_info = cidades[0] if cidades else None
-
-        if not cidade_info:
-            logger.warning("❌ Nenhuma cidade reconhecida para análise econômica.")
+        if not cidades:
             return {
                 "tipo": "erro",
                 "mensagem": "Não foi possível identificar uma cidade válida para análise econômica.",
@@ -33,15 +31,23 @@ class EconomiaAgent:
                 "fontes": [],
             }
 
-        nome, uf = cidade_info["nome"], cidade_info["uf"]
-        logger.debug(f"📍 Cidade identificada: {nome} ({uf})")
+        nome = cidades[0]["nome"]
+        logger.debug(f"📍 Cidade identificada: {nome}")
 
         try:
-            query = """
-                SELECT cidade, estado, pib_per_capita, ano_pib
-                FROM municipios
-                WHERE cidade = %(cidade)s
-            """
+            query = text(
+                """
+                SELECT
+                  m.cidade,
+                  e.nome          AS estado,
+                  m.pib_per_capita,
+                  m.ano_pib
+                FROM public.municipios m
+                JOIN public.estados e
+                  ON e.sigla = m.sigla_estado
+                WHERE m.cidade = :cidade
+                """
+            )
             df = pd.read_sql(query, con=get_engine(), params={"cidade": nome})
 
             if df.empty:
@@ -53,20 +59,24 @@ class EconomiaAgent:
                     "fontes": [],
                 }
 
-            dados_dict: List[Dict[str, Any]] = df.to_dict(orient="records")
-            logger.info(f"✅ Dados econômicos recuperados com sucesso para {nome}.")
+            # formata só as colunas de interesse
+            cols = ["cidade", "estado", "pib_per_capita", "ano_pib"]
+            dados_df = df[cols]
+            dados_md = dados_df.to_markdown(index=False)
 
             resposta = gerar_resposta(
                 pergunta=pergunta,
-                dados=dados_dict,
+                dados=dados_df.to_dict(orient="records"),
                 tema=self.tema,
                 fontes=["PostgreSQL"],
+                prompt_template=TEMPLATE_SINGLE_CITY,
+                dados_formatados=dados_md,
             )
 
             return {
                 "tipo": "resposta",
                 "mensagem": resposta,
-                "dados": dados_dict,
+                "dados": dados_df.to_dict(orient="records"),
                 "fontes": ["PostgreSQL"],
             }
 

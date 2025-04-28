@@ -6,47 +6,73 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 270 75% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 265 89% 78%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 270 75% 60%;
-    --radius: 0.75rem;
+    /* Fundo geral: azul-escuro marinho */
+    --background: 214 12% 10%; /* #0A1A2B */
+    --foreground: 0 0% 96%; /* branco claro */
+
+    /* Bordas, cards, popovers */
+    --border: 214 12% 15%; /* só um pouco acima do background */
+    /* Destaque (botões, thumb da scrollbar) */
+    --primary: 212 55% 30%; /* #1F4068 */
   }
 
-  * {
+  *,
+  *::before,
+  *::after {
     @apply border-border;
   }
 
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-[hsl(var(--background))] text-foreground font-sans antialiased overflow-hidden;
   }
 
-  .glass-panel {
-    @apply backdrop-blur-lg bg-black/30 border border-white/10;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
+  /* gradiente sutil para a área principal do chat */
   .chat-gradient {
-    background: linear-gradient(to bottom right, #0f0c29, #302b63, #24243e);
+    background: linear-gradient(
+      to bottom right,
+      hsl(var(--background)),
+      hsl(var(--border)),
+      hsl(var(--background))
+    );
   }
 
-  .text-glow {
-    text-shadow: 0 0 8px rgba(159, 122, 234, 0.6);
+  /* ===========================================
+     SCROLLBAR DO CHAT – ESCONDIDA POR PADRÃO
+     =========================================== */
+
+  .chat-messages {
+    overflow-y: auto; /* sempre permite scroll */
+    scrollbar-width: none; /* Firefox: esconde */
+    -ms-overflow-style: none; /* IE 10+: esconde */
+  }
+  .chat-messages::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* Quando o container tiver overflow, adicionamos essa classe via JS:
+     ela apenas torna a barra visível e fina */
+  .chat-messages.has-scrollbar {
+    scrollbar-width: thin; /* Firefox: exibe fina */
+  }
+  .chat-messages.has-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .chat-messages.has-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary));
+    border-radius: 3px;
+  }
+  .chat-messages.has-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
   }
 }

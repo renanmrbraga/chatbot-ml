@@ -1,4 +1,5 @@
 # core/handlers/chat_handler.py
+# core/handlers/chat_handler.py
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -18,8 +19,8 @@ def processar_pergunta(pergunta: str, session_id: str) -> Tuple[
     Optional[Dict[str, Any]],  # cidade_info
     Optional[str],  # tema
     Optional[Any],  # agente
-    Optional[Dict[str, Any]],  # dados
-    Optional[str],  # comparative_base64
+    Optional[Dict[str, Any]],  # dados brutos
+    Optional[Dict[str, Any]],  # chart_data
     Optional[str],  # csv_base64
     Optional[str],  # pdf_base64
 ]:
@@ -27,7 +28,7 @@ def processar_pergunta(pergunta: str, session_id: str) -> Tuple[
 
     resposta: str = "❌ Não consegui responder sua pergunta."
     fontes: List[str] = []
-    comparative_base64: Optional[str] = None
+    chart_data: Optional[Dict[str, Any]] = None
     csv_base64: Optional[str] = None
     pdf_base64: Optional[str] = None
     dados: Optional[Dict[str, Any]] = None
@@ -49,7 +50,7 @@ def processar_pergunta(pergunta: str, session_id: str) -> Tuple[
         else:
             resposta = str(dados.get("mensagem", resposta))
             fontes = list(dados.get("fontes", ["PostgreSQL"]))
-            comparative_base64 = dados.get("imagem_base64")
+            chart_data = dados.get("chart_data")
             csv_base64 = dados.get("csv_base64")
             pdf_base64 = dados.get("pdf_base64")
 
@@ -98,7 +99,7 @@ def processar_pergunta(pergunta: str, session_id: str) -> Tuple[
         tema,
         agente,
         dados,
-        comparative_base64,
+        chart_data,
         csv_base64,
         pdf_base64,
     )
