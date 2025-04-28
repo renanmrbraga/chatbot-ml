@@ -21,14 +21,22 @@ repos:
       - id: mypy
         name: mypy (backend)
         files: ^backend/
-        args: ['--explicit-package-bases']
-        additional_dependencies: ['types-requests', 'types-PyYAML']
+        args:
+          - --explicit-package-bases
+          - --namespace-packages
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
 
       - id: mypy
         name: mypy (scraper)
         files: ^scraper/
-        args: ['--explicit-package-bases']
-        additional_dependencies: ['types-requests', 'types-PyYAML']
+        args:
+          - --explicit-package-bases
+          - --namespace-packages
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
 
   - repo: local
     hooks:
