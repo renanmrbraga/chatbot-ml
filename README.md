@@ -6,9 +6,9 @@
 ![React](https://img.shields.io/badge/React-2023-%2361DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-# Chatbot LLM para Parcerias Público-Privadas (Educação)
+# Chatbot Houer Bot
 
-Sistema completo com **backend em FastAPI** e **frontend em React** para responder perguntas sobre dados públicos de cidades brasileiras (educação, economia, população, etc.), com foco em apoiar **Parcerias Público-Privadas (PPPs)**.
+Chatbot RAG híbirdo com **backend em FastAPI** e **frontend em React** para responder perguntas sobre dados públicos de cidades brasileiras (educação, economia, população, etc.), com foco em apoiar a empresa **Houer**.
 
 ---
 
