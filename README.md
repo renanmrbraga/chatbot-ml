@@ -8,7 +8,7 @@
 
 # Chatbot Houer Bot
 
-Chatbot RAG híbirdo com **backend em FastAPI** e **frontend em React** para responder perguntas sobre dados públicos de cidades brasileiras (educação, economia, população, etc.), com foco em apoiar a empresa **Houer**.
+Chatbot RAG híbrido com **backend em FastAPI** e **frontend em React** para responder perguntas sobre dados públicos de cidades brasileiras (educação, economia, população, etc.), com foco em apoiar a empresa **Houer**.
 
 ---
 
