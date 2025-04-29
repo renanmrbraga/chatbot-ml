@@ -1,7 +1,7 @@
 # core/router/interpreter.py
 from __future__ import annotations
 
-from typing import Tuple, Type, Dict, List, Any, Protocol, runtime_checkable
+from typing import Tuple, Type, Dict, List, Any, Protocol, Optional, runtime_checkable
 import re
 from utils.logger import get_logger
 from core.router.semantic_router import classificar_tema
@@ -13,7 +13,6 @@ from core.agents.populacao_agent import PopulacaoAgent
 from core.agents.economia_agent import EconomiaAgent
 from core.agents.comparative_agent import ComparativeAgent
 from core.agents.institucional_agent import InstitucionalAgent
-from core.agents.llm_agent import LLMAgent
 
 logger = get_logger(__name__)
 
@@ -35,14 +34,15 @@ def load_agents() -> Dict[str, Type[AgentType]]:
         "economia": EconomiaAgent,
         "comparative": ComparativeAgent,
         "institucional": InstitucionalAgent,
-        "llm": LLMAgent,
     }
 
 
 AGENTS_DISPONIVEIS = load_agents()
 
 
-def interpretar_pergunta(pergunta: str) -> Tuple[AgentType, str, List[Dict[str, Any]]]:
+def interpretar_pergunta(
+    pergunta: str,
+) -> Tuple[Optional[AgentType], str, List[Dict[str, Any]]]:
     if not pergunta or not pergunta.strip():
         logger.warning("⚠️ Pergunta vazia ou inválida recebida.")
         return InstitucionalAgent(), "institucional", []
@@ -72,7 +72,11 @@ def interpretar_pergunta(pergunta: str) -> Tuple[AgentType, str, List[Dict[str, 
             tema = "institucional"
 
     # 4️⃣ Selecionar agente: se tema não existir, usar LLMAgent
-    agente_classe = AGENTS_DISPONIVEIS.get(tema, LLMAgent)
+    agente_classe = AGENTS_DISPONIVEIS.get(tema)
+    if agente_classe is None:
+        logger.warning(f"❌ Tema '{tema}' não corresponde a nenhum agente. Abortando.")
+        return None, tema, cidades
+
     logger.info(
         f"🤖 Tema identificado: {tema} | Agente selecionado: {agente_classe.__name__}"
     )

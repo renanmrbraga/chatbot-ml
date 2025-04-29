@@ -64,8 +64,13 @@ def processar_pergunta(pergunta: str, session_id: str) -> Tuple[
                 )
             )
     else:
-        resposta, fontes, cidade_info, agente = executar_fallback(pergunta)
-        agente_nome = agente.__class__.__name__ if agente else "LLM"
+        logger.info("🚫 Nenhum dado retornado e fallback desativado.")
+        resposta = (
+            "Desculpe, não encontrei dados confiáveis para responder sua pergunta."
+        )
+        fontes = []
+        agente = None
+        agente_nome = "Nenhum"
 
     try:
         registrar_resposta(

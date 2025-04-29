@@ -35,8 +35,8 @@
 1. Compare a população de São Paulo e Rio de Janeiro.
 2. Qual cidade tem mais matrículas de ensino fundamental: Salvador ou Belo Horizonte?
 3. Compare o PIB per capita de Curitiba, Porto Alegre e Florianópolis.
-4. Qual das duas cidades tem mais escolas com laboratório de informática: Manaus ou Volta Redonda?
-5. Compare o total de cursos técnicos entre Campinas e São José dos Campos.
+4. Qual das duas cidades tem mais escolas com laboratório de informática: Manaus, Volta Redonda, Petrópolis ou Santa Maria?
+5. Compare o total de cursos técnicos entre Itacuruba, São José dos Campos, Piraí, Macapá, Mossoró.
 
 ### 6. InstitucionalAgent (tema `institucional`)
 

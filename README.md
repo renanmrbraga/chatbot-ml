@@ -8,7 +8,27 @@
 
 # Chatbot Houer Bot
 
-Chatbot RAG híbrido com **backend em FastAPI** e **frontend em React** para responder perguntas sobre dados públicos de cidades brasileiras (educação, economia, população, etc.), com foco em apoiar o grupo **Houer**.
+Um **chatbot híbrido RAG** (Retrieval-Augmented Generation) de alta performance, desenvolvido para entregar respostas precisas e contextualizadas sobre dados públicos de municípios brasileiros.
+A plataforma integra:
+
+- **FastAPI** no backend, para um servidor leve, assíncrono e escalável.
+- **React + Vite + TailwindCSS** no frontend, garantindo uma experiência de usuário fluida e responsiva.
+- **LangChain** e **Groq (Gemma-2-9b-it)** para geração de linguagem natural, estritamente guiada por templates por agente.
+- **HuggingFace Embeddings** + **Pinecone** para indexação semântica e recuperação dinâmica de contexto.
+- **PostgreSQL** como fonte de verdade para dados tabulares (população, PIB, educação, infraestrutura) e **MongoDB** para logging estruturado de cada interação.
+
+Com agentes especializados (População, Economia, Educação Básica, Educação Técnica e Comparativo), o Houer Bot:
+
+1. **Interpreta** sua pergunta (detecção de cidade, tema e métrica) por regras heurísticas e keywords, sem jamais recorrer a LLM para tarefas de roteamento.
+2. **Recupera** dentro do PostgreSQL ou, no caso de múltiplos municípios, faz comparativos diretos.
+3. **Gera** a saída em Markdown enriquecido (análise de dados e conclusão objetiva), apoiada em prompts customizados.
+4. **Registra** cada passo: entrada, agente, fontes, cidades e timestamp em MongoDB, garantindo auditabilidade e métricas de uso.
+
+Este projeto foi concebido para atender às necessidades do **Grupo Houer**, permitindo:
+
+- **Consultas inteligentes** (quantas escolas, matrículas, docentes, turmas) por município.
+- **Análises comparativas** entre duas ou mais cidades, com cálculos diretos de diferença e ranking.
+- **Extensibilidade** para novas fontes, métricas e agentes setoriais.
 
 ---
 
@@ -267,10 +287,3 @@ Acesse:
 Este projeto está licenciado sob os termos da [Licença MIT](./LICENSE).
 
 ---
-
-## 📢 Notice
-
-Este sistema usa dados públicos de fontes oficiais (IBGE, INEP, QEdu, etc.).
-Os dados podem conter limitações, defasagens ou mudanças futuras.
-Este sistema é apenas para fins analíticos e educacionais.
-Para informações oficiais, consulte os portais originais – veja o [NOTICE.md](./NOTICE.md).
