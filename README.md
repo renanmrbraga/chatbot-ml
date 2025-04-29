@@ -170,7 +170,7 @@ Chatbot RAG híbrido com **backend em FastAPI** e **frontend em React** para res
 | **Dados**          | PostgreSQL + Pandas + INEP/SIDRA Scrapers               |
 | **RAG**            | HuggingFace + Pinecone Embeddings                       |
 | **Orquestração**   | Agents semânticos + roteamento inteligente              |
-| **Dashboards**     | Exportação como imagem base64                           |
+| **Dashboards**     | Exportação como ECharts                                 |
 | **Infraestrutura** | Docker + logging estruturado + inicialização automática |
 
 ---
