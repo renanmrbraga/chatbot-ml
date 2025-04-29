@@ -20,20 +20,20 @@ repos:
     hooks:
       - id: mypy
         name: mypy (backend)
-        files: ^backend/
+        pass_filenames: false
         args:
-          - --explicit-package-bases
           - --namespace-packages
+          - backend
         additional_dependencies:
           - types-requests
           - types-PyYAML
 
       - id: mypy
         name: mypy (scraper)
-        files: ^scraper/
+        pass_filenames: false
         args:
-          - --explicit-package-bases
           - --namespace-packages
+          - scraper
         additional_dependencies:
           - types-requests
           - types-PyYAML

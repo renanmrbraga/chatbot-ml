@@ -25,16 +25,15 @@ const Message: React.FC<MessageProps> = ({ role, text, agent, fontes }) => {
           ${
             isUser
               ? 'bg-gradient-to-br from-chatbot-user to-chatbot-user/80 text-white'
-              : 'glass-panel text-gray-100'
+              : 'bg-gray-800/40 backdrop-blur-lg text-gray-100'
           }
         `}
       >
         {!isUser && agent && (
           <div className="text-xs text-chatbot-light mb-2 font-mono flex flex-wrap gap-2 items-center">
             <span className="inline-flex items-center gap-1">
-              🤖 Agente: <span className="text-white font-medium">{agent || 'LLM'}</span>
+              🤖 Agente: <span className="text-white font-medium">{agent}</span>
             </span>
-
             {fontes && fontes.length > 0 && (
               <span className="inline-flex items-center gap-1">
                 • 🗂️ Fonte: <span className="text-white font-medium">{fontes.join(', ')}</span>
@@ -42,7 +41,6 @@ const Message: React.FC<MessageProps> = ({ role, text, agent, fontes }) => {
             )}
           </div>
         )}
-
         <div className="whitespace-pre-line leading-relaxed font-light text-sm md:text-base tracking-wide">
           {text}
         </div>

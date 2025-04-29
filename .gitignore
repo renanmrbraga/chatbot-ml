@@ -99,7 +99,3 @@ lerna-debug.log*
 # Prettier Config Cache
 # =====================
 .prettiercache
-
-
-# Tirar depois
-scraper/

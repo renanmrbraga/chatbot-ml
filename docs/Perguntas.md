@@ -40,8 +40,8 @@
 
 ### 6. InstitucionalAgent (tema `institucional`)
 
-1. Quais certificações de qualidade o Grupo Houer possui para garantir excelência em seus processos?
-2. Como o Grupo Houer demonstra seu compromisso com o bem-estar dos colaboradores e a excelência organizacional?
-3. Qual é o papel do Grupo Houer no desenvolvimento de projetos de infraestrutura sustentável?
-4. Como o Grupo Houer se posiciona em relação aos Objetivos de Desenvolvimento Sustentável (ODS) da ONU?
-5. O que o grupo Houer faz?
+1. O que o grupo Houer faz?
+2. Quais certificações de qualidade o Grupo Houer possui para garantir excelência em seus processos?
+3. Como o Grupo Houer demonstra seu compromisso com o bem-estar dos colaboradores e a excelência organizacional?
+4. Qual é o papel do Grupo Houer no desenvolvimento de projetos de infraestrutura sustentável?
+5. Como o Grupo Houer se posiciona em relação aos Objetivos de Desenvolvimento Sustentável (ODS) da ONU?
