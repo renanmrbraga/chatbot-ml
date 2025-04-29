@@ -30,12 +30,12 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 - Consulta inteligente por município (`população`, `PIB`, `infraestrutura`, `escolas`, etc.)
 - Comparativos entre cidades com gráficos interativos
 - Geração de resposta interpretada por LLM (`gemma-2-9b-it` via Groq)
-- Fallback com **HuggingFace + Pinecone Embeddings**
+- Embeddings com **HuggingFace + Pinecone**
 - Logs completos em MongoDB (mensagens, cidades, agentes, dashboards gerados)
-- Backend FastAPI + API REST estruturada
-- Frontend futurista (React + Vite + Tailwind)
-- Integração com APIs do IBGE e dados educacionais do INEP
 - Pipeline de scraping e ETL com PostgreSQL
+- Backend FastAPI + API REST estruturada
+- Frontend moderno (React + Vite + Tailwind)
+- Integração com APIs do IBGE e dados educacionais do INEP
 
 ---
 
@@ -137,7 +137,7 @@ Sistema completo com **backend em FastAPI** e **frontend em React** para respond
 ├── data/                 # Dados brutos, limpos e tratados pelo pipeline ETL
 ├── utils/                # Funções auxiliares de scraping e transformação
 ├── requirements.txt      # Dependências Python do scraper
-└── scraper.py            # Pipeline central do scraping (orquestração dos módulos)
+└── scrap.py            # Pipeline central do scraping (orquestração dos módulos)
 ```
 
 </details>
