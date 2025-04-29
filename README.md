@@ -19,7 +19,7 @@ A plataforma integra:
 
 Com agentes especializados (População, Economia, Educação Básica, Educação Técnica e Comparativo), o Houer Bot:
 
-1. **Interpreta** sua pergunta (detecção de cidade, tema e métrica) por regras heurísticas e keywords, sem jamais recorrer a LLM para tarefas de roteamento.
+1. **Interpreta** sua pergunta (detecção de cidade, tema e métrica) por regras heurísticas e keywords, **podendo escalar para a própria LLM interpretar a pergunta**.
 2. **Recupera** dentro do PostgreSQL ou, no caso de múltiplos municípios, faz comparativos diretos.
 3. **Gera** a saída em Markdown enriquecido (análise de dados e conclusão objetiva), apoiada em prompts customizados.
 4. **Registra** cada passo: entrada, agente, fontes, cidades e timestamp em MongoDB, garantindo auditabilidade e métricas de uso.
