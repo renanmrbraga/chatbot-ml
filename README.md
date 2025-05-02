@@ -327,4 +327,4 @@ As respostas geradas por este sistema são **interpretadas por um modelo de ling
 
 ## 📬 Contato
 
-Para dúvidas ou solicitações formais sobre os dados utilizados, envie um e-mail para [renanmrbraga@gmail.com](mailto:renanmrbraga@gmail.com) ou acesse [linkedin.com/in/renanmrbraga](https://www.linkedin.com/in/renanmrbraga)
+Para dúvidas ou solicitações formais sobre os dados utilizados, envie um e-mail para [E-mail](mailto:renanmrbraga@gmail.com) ou acesse [LinkedIn](https://www.linkedin.com/in/renanmrbraga)
