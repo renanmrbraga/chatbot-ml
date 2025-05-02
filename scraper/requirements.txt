@@ -1,0 +1,10 @@
+SQLAlchemy
+psycopg-binary
+pandas
+numpy
+requests
+beautifulsoup4
+RapidFuzz
+python-dotenv
+tqdm
+PyYAML

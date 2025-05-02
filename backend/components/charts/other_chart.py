@@ -1,4 +1,4 @@
-# app/components/charts/other_chart.py
+# chatbot-llm/backend/components/charts/other_chart.py
 import streamlit as st
 
 

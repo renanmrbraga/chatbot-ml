@@ -1,4 +1,4 @@
-# backend/utils/retriever.py
+# chatbot-llm/backend/utils/retriever.py
 from typing import List, Tuple, Dict, Any
 from utils.logger import get_logger
 from utils.embedder import get_vectorstore

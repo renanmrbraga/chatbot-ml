@@ -1,5 +1,4 @@
-# backend/scraping/scraper_sidra_ibge.py
-
+# chatbot-llm/scraper/core/scraper_sidra_ibge.py
 import requests
 import time
 import json

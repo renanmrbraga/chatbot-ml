@@ -1,4 +1,4 @@
-# core/handlers/session_handler.py
+# chatbot-llm/backend/core/handlers/session_handler.py
 from __future__ import annotations
 
 import os

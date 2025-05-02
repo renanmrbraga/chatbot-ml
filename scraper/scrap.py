@@ -1,4 +1,4 @@
-# backend/scraping/scrap.py
+# chatbot-llm/scraper/scrap.py
 from typing import Callable, List, Tuple
 from utils.logger import get_logger
 from .scraper_sidra_ibge import run as run_sidra

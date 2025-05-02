@@ -1,4 +1,4 @@
-# scraper/core/insert_database.py
+# chatbot-llm/scraper/core/insert_database.py
 import pandas as pd
 from pathlib import Path
 from sqlalchemy import text

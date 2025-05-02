@@ -1,4 +1,4 @@
-# app/components/charts/chart_builder.py
+# chatbot-llm/backend/components/charts/chart_builder.py
 from typing import Any, Dict
 from .bar_chart import render_bar_chart
 from .radar_chart import render_radar_chart

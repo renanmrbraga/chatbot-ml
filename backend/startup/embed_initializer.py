@@ -1,4 +1,4 @@
-# startup/embed_initializer.py
+# chatbot-llm/backend/startup/embed_initializer.py
 import os
 import numpy as np
 

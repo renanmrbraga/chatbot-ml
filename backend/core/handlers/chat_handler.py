@@ -1,5 +1,4 @@
-# core/handlers/chat_handler.py
-# core/handlers/chat_handler.py
+# chatbot-llm/backend/core/handlers/chat_handler.py
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple

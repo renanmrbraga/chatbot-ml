@@ -1,4 +1,4 @@
-# backend/utils/embedder.py
+# chatbot-llm/backend/utils/embedder.py
 from typing import Any
 from pinecone import Pinecone, Index
 from langchain_huggingface import HuggingFaceEmbeddings

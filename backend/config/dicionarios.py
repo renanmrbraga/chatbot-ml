@@ -1,4 +1,4 @@
-# config/dicionarios.py
+# chatbot-llm/backend/config/dicionarios.py
 from __future__ import annotations
 
 import json

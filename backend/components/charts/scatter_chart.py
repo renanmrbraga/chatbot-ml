@@ -1,4 +1,4 @@
-# app/components/charts/scatter_chart.py
+# chatbot-llm/backend/components/charts/scatter_chart.py
 from typing import Dict, List, Union
 
 from streamlit_echarts import st_echarts

@@ -1,4 +1,4 @@
-# backend/utils/config.py
+# chatbot-llm/backend/config/config.py
 from __future__ import annotations
 
 import os

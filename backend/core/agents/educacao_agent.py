@@ -1,4 +1,4 @@
-# core/agents/educacao_agent.py
+# chatbot-llm/backend/core/agents/educacao_agent.py
 from __future__ import annotations
 from typing import Any, Dict, List, Optional
 from sqlalchemy import text

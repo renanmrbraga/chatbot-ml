@@ -1,10 +1,11 @@
+# chatbot-llm/scraper/utils/logger.py
 import logging
 import sys
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from logging.handlers import RotatingFileHandler
 
-from utils.config import LOGS_DIR  # import relativo
+from utils.config import LOGS_DIR
 
 # Nome do arquivo de log baseado na data (YYYY-MM-DD)
 log_file: Path = LOGS_DIR / f"chatppp_{datetime.now().strftime('%Y-%m-%d')}.log"

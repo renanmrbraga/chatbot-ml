@@ -1,3 +1,4 @@
+# chatbot-llm/scraper/utils/connection.py
 from __future__ import annotations
 
 import time
@@ -8,8 +9,8 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine, Connection
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
-from utils.config import DATABASE_URL  # import relativo
-from utils.logger import get_logger  # import relativo
+from utils.config import DATABASE_URL
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 

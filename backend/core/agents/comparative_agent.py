@@ -1,4 +1,4 @@
-# core/agents/comparative_agent.py
+# chatbot-llm/backend/core/agents/comparative_agent.py
 import pandas as pd
 from typing import Any, Dict, List, Optional, Union
 from sqlalchemy import text

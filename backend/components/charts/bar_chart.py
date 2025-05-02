@@ -1,4 +1,4 @@
-# app/components/charts/bar_chart.py
+# chatbot-llm/backend/components/charts/bar_chart.py
 from typing import Any, Dict
 
 from streamlit_echarts import st_echarts

@@ -1,4 +1,4 @@
-# scraper/core/config.py
+# chatbot-llm/scraper/utils/config.py
 from __future__ import annotations
 
 import os

@@ -1,4 +1,4 @@
-# database/mongo_logger.py
+# chatbot-llm/backend/database/mongo_logger.py
 import os
 from typing import List
 

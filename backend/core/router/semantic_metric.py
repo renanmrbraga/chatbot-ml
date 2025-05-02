@@ -1,4 +1,4 @@
-# core/router/semantic_metric.py
+# chatbot-llm/backend/core/router/semantic_metric.py
 from __future__ import annotations
 
 import re

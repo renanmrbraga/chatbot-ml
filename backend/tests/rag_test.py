@@ -1,4 +1,4 @@
-# tests/rag_test.py
+# chatbot-llm/backend/tests/rag_test.py
 from typing import List
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate

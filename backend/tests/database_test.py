@@ -1,4 +1,4 @@
-# tests/database_test.py
+# chatbot-llm/backend/tests/database_test.py
 from typing import Any, Dict
 from sqlalchemy import text
 from database.connection import get_engine

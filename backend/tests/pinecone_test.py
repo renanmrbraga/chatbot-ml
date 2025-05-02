@@ -1,4 +1,4 @@
-# tests/pinecone_test.py
+# chatbot-llm/backend/tests/pinecone_test.py
 from typing import Optional
 import os
 from dotenv import load_dotenv

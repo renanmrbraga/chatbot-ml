@@ -1,4 +1,4 @@
-# app/components/charts/gauge_chart.py
+# chatbot-llm/backend/components/charts/gauge_chart.py
 from typing import Any, Dict, List, Union
 
 from streamlit_echarts import st_echarts
