@@ -37,99 +37,121 @@ class ComparativeAgent:
         self, cidades: List[Dict[str, Any]], pergunta: str
     ) -> RespostaTipo:
         nomes = [c["nome"] for c in cidades]
-        metric_col, label = classificar_metrica(pergunta)
-
-        # Escolhe SQL conforme métrica
-        if metric_col in ("populacao_total", "pib_per_capita"):
-            sql = text(
-                f"""
-                SELECT m.cidade, m.{metric_col} AS valor
-                  FROM public.municipios m
-                 WHERE m.cidade = ANY(:names)
-            """
-            )
-        elif metric_col.startswith("escolas_com_") or metric_col.startswith(
-            "profissionais_"
-        ):
-            sql = text(
-                f"""
-                SELECT m.cidade, i.{metric_col} AS valor
-                  FROM public.municipios m
-                  LEFT JOIN public.infraestrutura_basica i
-                    ON i.codigo_ibge = m.codigo_ibge
-                 WHERE m.cidade = ANY(:names)
-            """
-            )
-        elif any(
-            metric_col.startswith(pref)
-            for pref in ("matriculas_", "turmas_", "docentes_", "escolas_")
-        ):
-            sql = text(
-                f"""
-                SELECT m.cidade, d.{metric_col} AS valor
-                  FROM public.municipios m
-                  LEFT JOIN public.educacao_basica d
-                    ON d.codigo_ibge = m.codigo_ibge
-                 WHERE m.cidade = ANY(:names)
-            """
-            )
-        else:
-            # educacao_tecnica: pega censo mais recente
-            sql = text(
-                f"""
-                SELECT m.cidade, t.{metric_col} AS valor
-                  FROM public.municipios m
-                  LEFT JOIN (
-                      SELECT DISTINCT ON (codigo_ibge) codigo_ibge, {metric_col}
-                        FROM public.educacao_tecnica
-                       ORDER BY codigo_ibge, ano_censo DESC
-                  ) t
-                    ON t.codigo_ibge = m.codigo_ibge
-                 WHERE m.cidade = ANY(:names)
-            """
-            )
-
-        # Executa consulta
         engine = get_engine()
-        df = pd.read_sql(sql, con=engine, params={"names": nomes})
 
-        # 1) Contextos
-        records = df.to_dict(orient="records")
-        contextos = "\n".join(f"- **{r['cidade']}:** {r['valor']:,}" for r in records)
+        # 🔹 Base: população e PIB
+        df_mun = pd.read_sql(
+            text(
+                """
+                SELECT cidade, populacao_total, pib_per_capita
+                FROM municipios
+                WHERE cidade = ANY(:nomes)
+                """
+            ),
+            con=engine,
+            params={"nomes": nomes},
+        )
 
-        # 2) Comparações simples (duas cidades)
-        if len(records) >= 2:
-            c1, c2 = records[0], records[1]
-            diff = abs((c1.get("valor") or 0) - (c2.get("valor") or 0))
-            comparacoes = f"{c1['cidade']}: {c1['valor']:,} vs {c2['cidade']}: {c2['valor']:,} → diferença de {diff:,}"
-        else:
-            comparacoes = None
+        # 🔹 Educação básica
+        df_edu = pd.read_sql(
+            text(
+                """
+                SELECT m.cidade,
+                    e.matriculas_ensino_fundamental,
+                    e.matriculas_ensino_medio,
+                    e.docentes_ensino_fundamental,
+                    e.docentes_ensino_medio,
+                    e.escolas_ensino_fundamental,
+                    e.escolas_ensino_medio
+                FROM municipios m
+                LEFT JOIN educacao_basica e ON e.codigo_ibge = m.codigo_ibge
+                WHERE m.cidade = ANY(:nomes)
+                """
+            ),
+            con=engine,
+            params={"nomes": nomes},
+        )
 
-        # 3) Formatação
-        dados_md = df.to_markdown(index=False)
+        # 🔹 Infraestrutura
+        df_infra = pd.read_sql(
+            text(
+                """
+                SELECT m.cidade,
+                    i.escolas_com_biblioteca,
+                    i.escolas_com_laboratorio_ciencias,
+                    i.escolas_com_quadra_esportes,
+                    i.profissionais_com_formacao_pedagogia
+                FROM municipios m
+                LEFT JOIN infraestrutura_basica i ON i.codigo_ibge = m.codigo_ibge
+                WHERE m.cidade = ANY(:nomes)
+                """
+            ),
+            con=engine,
+            params={"nomes": nomes},
+        )
+
+        # 🔹 Cursos técnicos (último ano disponível)
+        df_tec = pd.read_sql(
+            text(
+                """
+                SELECT m.cidade,
+                    t.qt_curso_tec,
+                    t.qt_mat_curso_tec
+                FROM municipios m
+                LEFT JOIN (
+                    SELECT DISTINCT ON (codigo_ibge)
+                        codigo_ibge, qt_curso_tec, qt_mat_curso_tec
+                    FROM educacao_tecnica
+                    ORDER BY codigo_ibge, ano_censo DESC
+                ) t ON t.codigo_ibge = m.codigo_ibge
+                WHERE m.cidade = ANY(:nomes)
+                """
+            ),
+            con=engine,
+            params={"nomes": nomes},
+        )
+
+        # 🔁 Merge final por cidade
+        df = df_mun.merge(df_edu, on="cidade", how="outer")
+        df = df.merge(df_infra, on="cidade", how="outer")
+        df = df.merge(df_tec, on="cidade", how="outer")
+        df = df.fillna(0)
+
+        # 🔎 Contexto formatado
+        contextos = "\n".join(
+            [
+                f"- **{row['cidade']}**: {', '.join(f'{k}={v:,}' for k, v in row.items() if k != 'cidade')}"
+                for _, row in df.iterrows()
+            ]
+        )
+
+        # 📊 Gráfico e estrutura para resposta
         chart_data = {
             "cidades": nomes,
-            "metricas": [metric_col],
-            "valores": {r["cidade"]: [r.get("valor") or 0] for r in records},
+            "metricas": [col for col in df.columns if col != "cidade"],
+            "valores": {
+                row["cidade"]: [row[col] for col in df.columns if col != "cidade"]
+                for _, row in df.iterrows()
+            },
         }
 
-        # Gera mensagem via LLM
+        # 🧠 LLM
         mensagem = gerar_resposta(
             pergunta=pergunta,
-            dados=records,
+            dados=df.to_dict(orient="records"),
             tema=self.tema,
             fontes=["PostgreSQL"],
             prompt_template=TEMPLATE_COMPARATIVE,
-            dados_formatados=dados_md,
+            dados_formatados=df.to_markdown(index=False),
             contextos=contextos,
-            comparacoes=comparacoes,
+            comparacoes=None,
         )
 
         return {
             "tipo": "comparativo",
             "mensagem": mensagem,
-            "dados": records,
+            "dados": df.to_dict(orient="records"),
             "chart_data": chart_data,
             "csv_base64": exportar_csv_base64(df),
-            "pdf_base64": exportar_pdf_base64(df, titulo=f"Comparação: {label}"),
+            "pdf_base64": exportar_pdf_base64(df, titulo="Comparativo Multivariável"),
         }

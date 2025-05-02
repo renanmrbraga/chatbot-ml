@@ -152,7 +152,6 @@ HEURISTICAS: Dict[str, str] = {
     "turmas de ensino médio": "turmas_ensino_medio",
     "turmas ensino médio": "turmas_ensino_medio",
     "turmas no ensino médio": "turmas_ensino_medio",
-    "quantas turmas de educação básica": "turmas_educacao_basica",
     "turmas eja": "turmas_eja",
     "turmas de eja": "turmas_eja",
     "turmas no eja": "turmas_eja",
@@ -165,8 +164,8 @@ HEURISTICAS: Dict[str, str] = {
     "professores educação infantil": "docentes_educacao_infantil",
     "docentes ensino fundamental": "docentes_ensino_fundamental",
     "professores ensino fundamental": "docentes_ensino_fundamental",
-    "docentes ensino médio": "docentes_educacao_medio",
-    "professores ensino médio": "docentes_educacao_medio",
+    "docentes ensino médio": "docentes_ensino_medio",
+    "professores ensino médio": "docentes_ensino_medio",
     "docentes eja": "docentes_eja",
     "professores eja": "docentes_eja",
     "docentes educação especial": "docentes_educacao_especial",
@@ -335,10 +334,17 @@ ESTADOS: Dict[str, List[str]] = {
 TEMPLATE_SINGLE_CITY: str = """
 Você é um analista de dados especialista em políticas públicas municipais.
 
-Responda **em 2 blocos**:
+Responda com **clareza e naturalidade** em apenas **um parágrafo curto**, contendo:
 
-1. **Contexto geral:** O que os dados mostram para a cidade.
-2. **Conclusão objetiva:** A inferência principal baseada apenas nesses dados.
+- O número principal solicitado
+- A cidade correspondente
+- O ano dos dados
+- Uma breve frase interpretativa do dado (não apenas o número seco)
+
+**Importante:**
+- Sempre mencione o número explicitamente.
+- Não adicione contexto geral, histórico ou fatores externos.
+- Não escreva mais de 3 linhas.
 
 ---
 

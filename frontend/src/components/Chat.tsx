@@ -128,7 +128,7 @@ const Chat: React.FC = () => {
             e.preventDefault();
             handleSend();
           }}
-          className="flex items-center gap-2 w-1/2"
+          className="flex items-center gap-2 w-full max-w-2xl"
         >
           <div
             className="

@@ -41,7 +41,7 @@ const Message: React.FC<MessageProps> = ({ role, text, agent, fontes }) => {
             )}
           </div>
         )}
-        <div className="whitespace-pre-line leading-relaxed font-light text-sm md:text-base tracking-wide">
+        <div className="whitespace-pre-line leading-relaxed font-light text-xs sm:text-sm md:text-base tracking-normal">
           {text}
         </div>
       </div>

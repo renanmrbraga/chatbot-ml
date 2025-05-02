@@ -6,9 +6,11 @@
 ![React](https://img.shields.io/badge/React-2023-%2361DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-# Chatbot Houer Bot
+# DataBot
 
 Um **chatbot híbrido RAG** (Retrieval-Augmented Generation) de alta performance, desenvolvido para entregar respostas precisas e contextualizadas sobre dados públicos de municípios brasileiros.
+O primeiro passo consiste em um **pipeline de scraping e ETL** que coleta automaticamente dados de APIs públicas (IBGE/SIDRA, INEP, QEdu, etc.) e os armazena no PostgreSQL, garantindo uma fonte de verdade atualizada.
+
 A plataforma integra:
 
 - **FastAPI** no backend, para um servidor leve, assíncrono e escalável.
@@ -17,14 +19,14 @@ A plataforma integra:
 - **HuggingFace Embeddings** + **Pinecone** para indexação semântica e recuperação dinâmica de contexto.
 - **PostgreSQL** como fonte de verdade para dados tabulares (população, PIB, educação, infraestrutura) e **MongoDB** para logging estruturado de cada interação.
 
-Com agentes especializados (População, Economia, Educação Básica, Educação Técnica e Comparativo), o Houer Bot:
+Com agentes especializados (População, Economia, Educação Básica, Educação Técnica e Comparativo), o Chatbot:
 
 1. **Interpreta** sua pergunta (detecção de cidade, tema e métrica) por regras heurísticas e keywords, **podendo escalar para a própria LLM interpretar a pergunta**.
 2. **Recupera** dentro do PostgreSQL ou, no caso de múltiplos municípios, faz comparativos diretos.
 3. **Gera** a saída em Markdown enriquecido (análise de dados e conclusão objetiva), apoiada em prompts customizados.
 4. **Registra** cada passo: entrada, agente, fontes, cidades e timestamp em MongoDB, garantindo auditabilidade e métricas de uso.
 
-Este projeto foi concebido para atender às necessidades do **Grupo Houer**, permitindo:
+Este projeto foi concebido para atender às necessidades de:
 
 - **Consultas inteligentes** (quantas escolas, matrículas, docentes, turmas) por município.
 - **Análises comparativas** entre duas ou mais cidades, com cálculos diretos de diferença e ranking.
@@ -157,7 +159,7 @@ Este projeto foi concebido para atender às necessidades do **Grupo Houer**, per
 ├── data/                 # Dados brutos, limpos e tratados pelo pipeline ETL
 ├── utils/                # Funções auxiliares de scraping e transformação
 ├── requirements.txt      # Dependências Python do scraper
-└── scrap.py            # Pipeline central do scraping (orquestração dos módulos)
+└── scrap.py              # Pipeline central do scraping (orquestração dos módulos)
 ```
 
 </details>
@@ -172,7 +174,6 @@ Este projeto foi concebido para atender às necessidades do **Grupo Houer**, per
 ├── docker-compose.yml           # Orquestração de todos os serviços com Docker Compose
 ├── LICENSE                      # Licença MIT do projeto
 ├── mypy.ini                     # Regras de tipagem estática para o Python com mypy
-├── NOTICE.md                    # Avisos sobre uso de dados públicos e fontes oficiais
 ├── pyrightconfig.json           # Regras de tipagem estática do TypeScript com Pyright
 └── README.md                    # Documentação principal do projeto
 ```
@@ -287,3 +288,43 @@ Acesse:
 Este projeto está licenciado sob os termos da [Licença MIT](./LICENSE).
 
 ---
+
+## 📢 NOTICE – Uso de Dados Públicos
+
+Este projeto utiliza dados públicos obtidos de fontes oficiais do governo brasileiro, de acordo com os princípios da Lei de Acesso à Informação (Lei nº 12.527/2011) e demais normas de dados abertos.
+
+## 🗂️ Fontes de Dados Utilizadas
+
+- **IBGE (Instituto Brasileiro de Geografia e Estatística)**
+
+  - SIDRA API, Downloads em CSV e GeoJSON
+  - [https://sidra.ibge.gov.br](https://sidra.ibge.gov.br)
+
+- **INEP (Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira)**
+
+  - Censo Escolar, Microdados e Suplementos Técnicos
+  - [https://www.gov.br/inep](https://www.gov.br/inep)
+
+- **FNDE (Fundo Nacional de Desenvolvimento da Educação)** `em breve`
+
+  - Programas educacionais e orçamentários
+  - [https://www.gov.br/fnde](https://www.gov.br/fnde)
+
+- **Portal da Transparência** `em breve`
+  - Gastos públicos federais, estaduais e municipais
+  - [https://www.portaltransparencia.gov.br](https://www.portaltransparencia.gov.br)
+
+## ⚠️ Sobre a Interpretação dos Dados
+
+As respostas geradas por este sistema são **interpretadas por um modelo de linguagem (LLM)** com base em dados públicos estruturados. Isso significa que podem haver variações na apresentação e análise dos dados. Sempre consulte os dados brutos nas fontes oficiais para tomada de decisão crítica.
+
+## 📅 Última atualização dos dados
+
+- Dados IBGE: Abril de 2025
+- Dados INEP: Censo Escolar 2023
+- Dados FNDE: Orçamento 2024 `em breve`
+- Portal da Transparência: Atualizações em tempo real `em breve`
+
+## 📬 Contato
+
+Para dúvidas ou solicitações formais sobre os dados utilizados, envie um e-mail para [renanmrbraga@gmail.com](mailto:renanmrbraga@gmail.com) ou acesse [linkedin.com/in/renanmrbraga](https://www.linkedin.com/in/renanmrbraga)
