@@ -325,6 +325,8 @@ As respostas geradas por este sistema são **interpretadas por um modelo de ling
 - Dados FNDE: Orçamento 2024 `em breve`
 - Portal da Transparência: Atualizações em tempo real `em breve`
 
+---
+
 ## 📬 Contato
 
-Para dúvidas ou solicitações formais sobre os dados utilizados, envie um e-mail para [E-mail](mailto:renanmrbraga@gmail.com) ou acesse [LinkedIn](https://www.linkedin.com/in/renanmrbraga)
+Para dúvidas ou solicitações formais sobre os dados utilizados, envie um [E-mail](mailto:renanmrbraga@gmail.com) ou acesse [LinkedIn](https://www.linkedin.com/in/renanmrbraga)
